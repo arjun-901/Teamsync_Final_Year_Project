@@ -6,7 +6,11 @@ const useAuth = () => {
     queryKey: ["authUser"],
     queryFn: getCurrentUserQueryFn,
     staleTime: 0,
-    retry: 2,
+    retry: (failureCount, error: any) => {
+      const status = error?.response?.status;
+      if (status === 401) return false;
+      return failureCount < 2;
+    },
   });
   return query;
 };
