@@ -10,7 +10,13 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,       // 👈 localhost:3000
-    strictPort: true, // Agar 3000 busy hua to error dega
+    port: 3000,
+    strictPort: true,
+    proxy: {
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+    },
   },
 });

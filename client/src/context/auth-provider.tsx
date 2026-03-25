@@ -7,6 +7,7 @@ import useGetWorkspaceQuery from "@/hooks/api/use-get-workspace";
 import { useLocation, useNavigate } from "react-router-dom";
 import usePermissions from "@/hooks/use-permissions";
 import { PermissionType } from "@/constant";
+import { baseURL } from "@/lib/base-url";
 
 // Define the context shape
 type AuthContextType = {
@@ -59,10 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (!workspaceId || !user?._id) return;
 
-    const base = import.meta.env.VITE_API_BASE_URL as string | undefined;
-    if (!base) return;
-
-    const url = `${base}/meetings/workspace/${workspaceId}/events`;
+    const url = `${baseURL}/meetings/workspace/${workspaceId}/events`;
 
     let es: EventSource | null = null;
     try {

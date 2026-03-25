@@ -5,7 +5,7 @@ const GoogleOauthButton = (props: { label: string; returnUrl?: string | null }) 
   const { label, returnUrl } = props;
 
   const handleClick = () => {
-    const url = new URL(`${baseURL}/auth/google`);
+    const url = new URL(`${baseURL}/auth/google`, window.location.origin);
 
     if (returnUrl) {
       url.searchParams.set("returnUrl", decodeURIComponent(returnUrl));
