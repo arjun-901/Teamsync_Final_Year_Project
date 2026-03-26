@@ -25,6 +25,7 @@ import { useMutation } from "@tanstack/react-query";
 import { loginMutationFn, registerMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { Loader } from "lucide-react";
+import { AUTH_ROUTES, BASE_ROUTE } from "@/routes/common/routePaths";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -91,13 +92,10 @@ const SignUp = () => {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <Link
-          to="/"
-          className="flex items-center gap-2 self-center font-medium"
-        >
-          <Logo />
-          Team Sync.
-        </Link>
+        <div className="flex items-center gap-2 self-center font-medium">
+          <Logo url={BASE_ROUTE.HOME} />
+          <Link to={BASE_ROUTE.HOME}>Team Sync.</Link>
+        </div>
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader className="text-center">
@@ -197,7 +195,11 @@ const SignUp = () => {
                     <div className="text-center text-sm">
                       Already have an account?{" "}
                       <Link
-                        to={returnUrl ? `/?returnUrl=${returnUrl}` : "/"}
+                        to={
+                          returnUrl
+                            ? `${AUTH_ROUTES.SIGN_IN}?returnUrl=${returnUrl}`
+                            : AUTH_ROUTES.SIGN_IN
+                        }
                         className="underline underline-offset-4"
                       >
                         Sign in
@@ -210,7 +212,8 @@ const SignUp = () => {
           </Card>
           <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary  ">
             By clicking continue, you agree to our{" "}
-            <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+            <Link to={BASE_ROUTE.TERMS_OF_SERVICE}>Terms of Service</Link> and{" "}
+            <Link to={BASE_ROUTE.PRIVACY_POLICY}>Privacy Policy</Link>.
           </div>
         </div>
       </div>

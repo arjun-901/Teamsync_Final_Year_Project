@@ -20,7 +20,10 @@ import { priorities, statuses } from "./data";
 import { TaskType } from "@/types/api.type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
+export const getColumns = (
+  projectId?: string,
+  canManageTasks = false
+): ColumnDef<TaskType>[] => {
   const columns: ColumnDef<TaskType>[] = [
     {
       id: "_id",
@@ -204,16 +207,16 @@ export const getColumns = (projectId?: string): ColumnDef<TaskType>[] => {
         );
       },
     },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        return (
-          <>
-            <DataTableRowActions row={row} />
-          </>
-        );
-      },
-    },
+    ...(canManageTasks
+      ? [
+          {
+            id: "actions",
+            cell: ({ row }: { row: Row<TaskType> }) => {
+              return <DataTableRowActions row={row} />;
+            },
+          },
+        ]
+      : []),
   ];
 
   return columns;

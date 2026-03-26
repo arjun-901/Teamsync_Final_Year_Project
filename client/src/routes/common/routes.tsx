@@ -12,6 +12,11 @@ import MeetingRoom from "@/page/meetings/[meetingId]";
 import { AUTH_ROUTES, BASE_ROUTE, PROTECTED_ROUTES } from "./routePaths";
 import InviteUser from "@/page/invite/InviteUser";
 import ProjectInviteUser from "@/page/invite/ProjectInviteUser";
+import TermsOfService from "@/page/legal/TermsOfService";
+import PrivacyPolicy from "@/page/legal/PrivacyPolicy";
+import Home from "@/page/home/Home";
+import AboutUs from "@/page/company/AboutUs";
+import ContactUs from "@/page/company/ContactUs";
 
 export const authenticationRoutePaths = [
   { path: AUTH_ROUTES.SIGN_IN, element: <SignIn /> },
@@ -31,6 +36,11 @@ export const protectedRoutePaths = [
 ];
 
 export const baseRoutePaths = [
+  { path: BASE_ROUTE.HOME, element: <Home /> },
+  { path: BASE_ROUTE.ABOUT_US, element: <AboutUs /> },
+  { path: BASE_ROUTE.CONTACT_US, element: <ContactUs /> },
   { path: BASE_ROUTE.INVITE_URL, element: <InviteUser /> },
   { path: BASE_ROUTE.PROJECT_INVITE_URL, element: <ProjectInviteUser /> },
+  { path: BASE_ROUTE.TERMS_OF_SERVICE, element: <TermsOfService /> },
+  { path: BASE_ROUTE.PRIVACY_POLICY, element: <PrivacyPolicy /> },
 ];

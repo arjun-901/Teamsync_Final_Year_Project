@@ -13,6 +13,7 @@ import { logoutMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
+import { BASE_ROUTE } from "@/routes/common/routePaths";
 
 const LogoutDialog = (props: {
   isOpen: boolean;
@@ -29,7 +30,7 @@ const LogoutDialog = (props: {
       queryClient.resetQueries({
         queryKey: ["authUser"],
       });
-      navigate("/");
+      navigate(BASE_ROUTE.HOME);
       setIsOpen(false);
     },
     onError: (error) => {

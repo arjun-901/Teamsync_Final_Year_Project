@@ -59,13 +59,10 @@ const ProjectInviteUser = () => {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-md flex-col gap-6">
-        <Link
-          to="/"
-          className="flex items-center gap-2 self-center font-medium"
-        >
-          <Logo />
-          Team Sync.
-        </Link>
+        <div className="flex items-center gap-2 self-center font-medium">
+          <Logo url={BASE_ROUTE.HOME} />
+          <Link to={BASE_ROUTE.HOME}>Team Sync.</Link>
+        </div>
 
         <Card>
           <CardHeader className="text-center">
@@ -91,7 +88,7 @@ const ProjectInviteUser = () => {
                 <Link to={`/sign-up?returnUrl=${returnUrl}`}>
                   <Button className="w-full">Signup and Join</Button>
                 </Link>
-                <Link to={`/?returnUrl=${returnUrl}`}>
+                <Link to={`/sign-in?returnUrl=${returnUrl}`}>
                   <Button variant="secondary" className="w-full border">
                     Login and Join
                   </Button>

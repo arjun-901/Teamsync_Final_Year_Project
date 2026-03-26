@@ -155,7 +155,7 @@ const AllMembers = () => {
                                           `Can view, create, edit tasks, project and manage settings .`}
 
                                         {role.name === "MEMBER" &&
-                                          `Can view,edit only task created by.`}
+                                          `Can view only tasks assigned to them.`}
                                       </p>
                                     </CommandItem>
                                   )

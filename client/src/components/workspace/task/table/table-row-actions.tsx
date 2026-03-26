@@ -18,6 +18,8 @@ import useWorkspaceId from "@/hooks/use-workspace-id";
 import { deleteTaskMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import EditTaskDialog from "../edit-task-dialog"; // Import the Edit Dialog
+import { useAuthContext } from "@/context/auth-provider";
+import { Permissions } from "@/constant";
 
 interface DataTableRowActionsProps {
   row: Row<TaskType>;
@@ -29,6 +31,9 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
 
   const queryClient = useQueryClient();
   const workspaceId = useWorkspaceId();
+  const { hasPermission } = useAuthContext();
+  const canEditTask = hasPermission(Permissions.EDIT_TASK);
+  const canDeleteTask = hasPermission(Permissions.DELETE_TASK);
 
   const { mutate, isPending } = useMutation({
     mutationFn: deleteTaskMutationFn,
@@ -37,6 +42,10 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const task = row.original;
   const taskId = task._id as string;
   const taskCode = task.taskCode;
+
+  if (!canEditTask && !canDeleteTask) {
+    return null;
+  }
 
   const handleConfirm = () => {
     mutate(
@@ -64,37 +73,48 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          {/* Edit Task Option */}
-          <DropdownMenuItem className="cursor-pointer" onClick={() => setOpenEditDialog(true)}>
-            <Pencil className="w-4 h-4 mr-2" /> Edit Task
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          {canEditTask ? (
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => setOpenEditDialog(true)}
+            >
+              <Pencil className="w-4 h-4 mr-2" /> Edit Task
+            </DropdownMenuItem>
+          ) : null}
+          {canEditTask && canDeleteTask ? <DropdownMenuSeparator /> : null}
 
-          {/* Delete Task Option */}
-          <DropdownMenuItem
-            className="!text-destructive cursor-pointer"
-            onClick={() => setOpenDialog(true)}
-          >
-            Delete Task
-            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-          </DropdownMenuItem>
+          {canDeleteTask ? (
+            <DropdownMenuItem
+              className="!text-destructive cursor-pointer"
+              onClick={() => setOpenDialog(true)}
+            >
+              Delete Task
+              <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          ) : null}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Edit Task Dialog */}
-      <EditTaskDialog task={task} isOpen={openEditDialog} onClose={() => setOpenEditDialog(false)} />
+      {canEditTask ? (
+        <EditTaskDialog
+          task={task}
+          isOpen={openEditDialog}
+          onClose={() => setOpenEditDialog(false)}
+        />
+      ) : null}
 
-      {/* Delete Task Confirmation Dialog */}
-      <ConfirmDialog
-        isOpen={openDeleteDialog}
-        isLoading={isPending}
-        onClose={() => setOpenDialog(false)}
-        onConfirm={handleConfirm}
-        title="Delete Task"
-        description={`Are you sure you want to delete ${taskCode}?`}
-        confirmText="Delete"
-        cancelText="Cancel"
-      />
+      {canDeleteTask ? (
+        <ConfirmDialog
+          isOpen={openDeleteDialog}
+          isLoading={isPending}
+          onClose={() => setOpenDialog(false)}
+          onConfirm={handleConfirm}
+          title="Delete Task"
+          description={`Are you sure you want to delete ${taskCode}?`}
+          confirmText="Delete"
+          cancelText="Cancel"
+        />
+      ) : null}
     </>
   );
 }

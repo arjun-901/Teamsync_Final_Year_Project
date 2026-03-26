@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import usePermissions from "@/hooks/use-permissions";
 import { PermissionType } from "@/constant";
 import { baseURL } from "@/lib/base-url";
+import { AUTH_ROUTES } from "@/routes/common/routePaths";
 
 // Define the context shape
 type AuthContextType = {
@@ -52,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (workspaceError) {
       if (workspaceError?.errorCode === "ACCESS_UNAUTHORIZED") {
-        navigate("/"); // Redirect if the user is not a member of the workspace
+        navigate(AUTH_ROUTES.SIGN_IN); // Redirect if the user is not a member of the workspace
       }
     }
   }, [navigate, workspaceError]);

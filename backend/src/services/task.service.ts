@@ -173,6 +173,7 @@ export const getAllTasksService = async (
     query.project = {
       $in: memberships.map((item) => item.project),
     };
+    query.assignedTo = userId;
   }
 
   if (filters.projectId) {
@@ -196,7 +197,11 @@ export const getAllTasksService = async (
     query.priority = { $in: filters.priority };
   }
 
-  if (filters.assignedTo && filters.assignedTo?.length > 0) {
+  if (
+    role !== Roles.MEMBER &&
+    filters.assignedTo &&
+    filters.assignedTo?.length > 0
+  ) {
     query.assignedTo = { $in: filters.assignedTo };
   }
 
@@ -272,6 +277,13 @@ export const getTaskByIdService = async (
   }).populate("assignedTo", "_id name profilePicture -password");
 
   if (!task) {
+    throw new NotFoundException("Task not found.");
+  }
+
+  if (
+    role === Roles.MEMBER &&
+    task.assignedTo?.toString() !== userId.toString()
+  ) {
     throw new NotFoundException("Task not found.");
   }
 

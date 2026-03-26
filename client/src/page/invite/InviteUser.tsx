@@ -57,13 +57,10 @@ const InviteUser = () => {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-md flex-col gap-6">
-        <Link
-          to="/"
-          className="flex items-center gap-2 self-center font-medium"
-        >
-          <Logo />
-          Team Sync.
-        </Link>
+        <div className="flex items-center gap-2 self-center font-medium">
+          <Logo url={BASE_ROUTE.HOME} />
+          <Link to={BASE_ROUTE.HOME}>Team Sync.</Link>
+        </div>
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader className="text-center">
@@ -83,7 +80,7 @@ const InviteUser = () => {
                   {user ? (
                     <div className="flex items-center justify-center my-3">
                       <p className="text-center text-sm text-muted-foreground">
-                        Aapko direct workspace me join karaya ja raha hai...
+                        You are being added to the workspace. Please wait...
                       </p>
                     </div>
                   ) : (
@@ -96,7 +93,7 @@ const InviteUser = () => {
                       </Link>
                       <Link
                         className="flex-1 w-full text-base"
-                        to={`/?returnUrl=${returnUrl}`}
+                        to={`/sign-in?returnUrl=${returnUrl}`}
                       >
                         <Button variant="secondary" className="w-full border">
                           Login

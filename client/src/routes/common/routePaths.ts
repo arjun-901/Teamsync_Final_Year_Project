@@ -3,7 +3,7 @@ export const isAuthRoute = (pathname: string): boolean => {
 };
 
 export const AUTH_ROUTES = {
-  SIGN_IN: "/",
+  SIGN_IN: "/sign-in",
   SIGN_UP: "/sign-up",
   GOOGLE_OAUTH_CALLBACK: "/google/oauth/callback",
 };
@@ -20,6 +20,11 @@ export const PROTECTED_ROUTES = {
 };
 
 export const BASE_ROUTE = {
+  HOME: "/",
+  ABOUT_US: "/about",
+  CONTACT_US: "/contact",
   INVITE_URL: "/invite/workspace/:inviteCode/join",
   PROJECT_INVITE_URL: "/invite/project/:token/join",
+  TERMS_OF_SERVICE: "/terms",
+  PRIVACY_POLICY: "/privacy",
 };

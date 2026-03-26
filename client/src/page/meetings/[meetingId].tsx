@@ -114,7 +114,7 @@ const MeetingRoom: React.FC = () => {
   });
 
   if (!meetingId || !workspaceId) {
-    return <Navigate to="/" />;
+    return <Navigate to="/sign-in" />;
   }
 
   if (isLoading) {

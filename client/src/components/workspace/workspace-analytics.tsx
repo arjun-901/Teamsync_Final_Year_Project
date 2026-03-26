@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Clock3,
   FolderKanban,
+  ListTodo,
   Layers3,
   Target,
 } from "lucide-react";
@@ -31,21 +32,18 @@ const WorkspaceAnalytics = () => {
           isLoading={isPending}
           title="All Tasks"
           value={analytics?.totalTasks || 0}
-          subtitle="Aapke visible projects ke combined tasks"
           icon={Layers3}
         />
         <AnalyticsCard
           isLoading={isPending}
           title="Active Projects"
           value={analytics?.totalProjects || 0}
-          subtitle="Jin projects me aap kaam kar rahe ho"
           icon={FolderKanban}
         />
         <AnalyticsCard
           isLoading={isPending}
           title="Assigned To Me"
           value={analytics?.assignedToMeTasks || 0}
-          subtitle="Open tasks directly assigned to you"
           icon={Target}
           tone="warning"
         />
@@ -53,14 +51,12 @@ const WorkspaceAnalytics = () => {
           isLoading={isPending}
           title="In Progress"
           value={analytics?.inProgressTasks || 0}
-          subtitle="Currently moving tasks"
           icon={Clock3}
         />
         <AnalyticsCard
           isLoading={isPending}
           title="Due Soon"
           value={analytics?.dueSoonTasks || 0}
-          subtitle="Next 7 days me due hone wale"
           icon={AlertTriangle}
           tone="warning"
         />
@@ -68,26 +64,25 @@ const WorkspaceAnalytics = () => {
           isLoading={isPending}
           title="Completed"
           value={analytics?.completedTasks || 0}
-          subtitle={`${analytics?.completionRate || 0}% overall completion`}
           icon={CheckCircle2}
           tone="success"
         />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="shadow-none">
-          <CardHeader>
+        <Card className="border-slate-200 shadow-none">
+          <CardHeader className="pb-4">
             <CardTitle className="text-base">Execution Health</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <div className="mb-2 flex items-center justify-between text-sm">
+              <div className="mb-2 flex items-center justify-between text-sm text-slate-600">
                 <span>Completion Rate</span>
-                <span className="font-semibold">
+                <span className="font-semibold text-slate-900">
                   {analytics?.completionRate || 0}%
                 </span>
               </div>
-              <div className="h-2 rounded-full bg-slate-200">
+              <div className="h-2 rounded-full bg-slate-100">
                 <div
                   className="h-2 rounded-full bg-emerald-500 transition-all"
                   style={{ width: `${analytics?.completionRate || 0}%` }}
@@ -95,21 +90,21 @@ const WorkspaceAnalytics = () => {
               </div>
             </div>
             <div className="grid grid-cols-3 gap-3 text-sm">
-              <div className="rounded-xl border p-3">
-                <p className="text-muted-foreground">To Do</p>
-                <p className="mt-1 text-xl font-semibold">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-slate-500">To Do</p>
+                <p className="mt-1 text-xl font-semibold text-slate-900">
                   {analytics?.todoTasks || 0}
                 </p>
               </div>
-              <div className="rounded-xl border p-3">
-                <p className="text-muted-foreground">In Progress</p>
-                <p className="mt-1 text-xl font-semibold">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-slate-500">In Progress</p>
+                <p className="mt-1 text-xl font-semibold text-slate-900">
                   {analytics?.inProgressTasks || 0}
                 </p>
               </div>
-              <div className="rounded-xl border p-3">
-                <p className="text-muted-foreground">High Priority</p>
-                <p className="mt-1 text-xl font-semibold">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-slate-500">High Priority</p>
+                <p className="mt-1 text-xl font-semibold text-slate-900">
                   {analytics?.highPriorityTasks || 0}
                 </p>
               </div>
@@ -117,27 +112,47 @@ const WorkspaceAnalytics = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-none border-slate-200 bg-[linear-gradient(135deg,#f8fafc_0%,#eef6ff_55%,#ecfeff_100%)]">
-          <CardHeader>
-            <CardTitle className="text-base">Smart Summary</CardTitle>
+        <Card className="border-slate-200 shadow-none">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base">Priority Snapshot</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-slate-700">
-            <p>
-              Aapke visible projects me <strong>{analytics?.totalTasks || 0}</strong>{" "}
-              tasks hain, jinme se <strong>{analytics?.completedTasks || 0}</strong>{" "}
-              complete ho chuke hain.
-            </p>
-            <p>
-              Abhi <strong>{analytics?.assignedToMeTasks || 0}</strong> tasks
-              directly aapko assigned hain aur{" "}
-              <strong>{analytics?.dueSoonTasks || 0}</strong> tasks next 7 days
-              me due hain.
-            </p>
-            <p>
-              Agar <strong>{analytics?.overdueTasks || 0}</strong> overdue aur{" "}
-              <strong>{analytics?.highPriorityTasks || 0}</strong> high-priority
-              tasks pe focus karoge to dashboard health sabse fast improve hogi.
-            </p>
+          <CardContent className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border border-slate-200 p-4">
+              <div className="flex items-center gap-2 text-sm text-slate-500">
+                <AlertTriangle className="size-4 text-amber-500" />
+                Overdue
+              </div>
+              <p className="mt-3 text-2xl font-semibold text-slate-900">
+                {analytics?.overdueTasks || 0}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 p-4">
+              <div className="flex items-center gap-2 text-sm text-slate-500">
+                <ListTodo className="size-4 text-slate-500" />
+                Assigned
+              </div>
+              <p className="mt-3 text-2xl font-semibold text-slate-900">
+                {analytics?.assignedToMeTasks || 0}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 p-4">
+              <div className="flex items-center gap-2 text-sm text-slate-500">
+                <Clock3 className="size-4 text-blue-500" />
+                Due Soon
+              </div>
+              <p className="mt-3 text-2xl font-semibold text-slate-900">
+                {analytics?.dueSoonTasks || 0}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 p-4">
+              <div className="flex items-center gap-2 text-sm text-slate-500">
+                <Target className="size-4 text-rose-500" />
+                High Priority
+              </div>
+              <p className="mt-3 text-2xl font-semibold text-slate-900">
+                {analytics?.highPriorityTasks || 0}
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>

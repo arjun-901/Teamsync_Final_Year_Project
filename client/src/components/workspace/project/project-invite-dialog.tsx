@@ -34,7 +34,7 @@ const ProjectInviteDialog = ({ projectId }: { projectId: string }) => {
           setInviteUrl(response.inviteUrl);
           toast({
             title: "Invite ready",
-            description: "Project invite link generate ho gaya hai.",
+            description: "The project invite link has been generated successfully.",
             variant: "success",
           });
         },
@@ -55,7 +55,7 @@ const ProjectInviteDialog = ({ projectId }: { projectId: string }) => {
     await navigator.clipboard.writeText(inviteUrl);
     toast({
       title: "Copied",
-      description: "Invite link clipboard me copy ho gaya.",
+      description: "The invite link has been copied to your clipboard.",
       variant: "success",
     });
   };
@@ -80,8 +80,8 @@ const ProjectInviteDialog = ({ projectId }: { projectId: string }) => {
         <DialogHeader>
           <DialogTitle>Share Project Invite</DialogTitle>
           <DialogDescription>
-            Is link se aane wala user signup/login ke baad direct workspace aur
-            selected project me join ho jayega.
+            Anyone using this link will be added to the workspace and the
+            selected project after signing in.
           </DialogDescription>
         </DialogHeader>
 

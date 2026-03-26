@@ -163,7 +163,7 @@ const ProjectChatPanel = () => {
     if (!message.trim() && files.length === 0) {
       toast({
         title: "Message required",
-        description: "Text ya file me se kuch to bhejna padega.",
+        description: "Please enter a message or attach at least one file.",
         variant: "destructive",
       });
       return;
@@ -306,8 +306,9 @@ const ProjectChatPanel = () => {
               {projectData?.project?.emoji} {projectData?.project?.name} Chat
             </CardTitle>
             <CardDescription>
-              Project ke members aur manager yahan messages aur files share kar
-              sakte hain. Messages auto-delete nahi honge.
+              Project members and administrators can collaborate here by
+              sharing messages and files. Messages are retained unless they are
+              manually removed.
             </CardDescription>
           </div>
           <Tabs
@@ -341,7 +342,8 @@ const ProjectChatPanel = () => {
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="py-10 text-center text-sm text-muted-foreground">
-                    Abhi tak koi message nahi hai. Pehla message bhejiye.
+                    No messages have been shared yet. Start the conversation by
+                    sending the first message.
                   </div>
                 ) : (
                   messages.map(renderMessage)
@@ -401,7 +403,7 @@ const ProjectChatPanel = () => {
                 </div>
               ) : sharedFiles.length === 0 ? (
                 <div className="col-span-full py-10 text-center text-sm text-muted-foreground">
-                  Abhi tak is project me koi shared file nahi hai.
+                  No shared files are available in this project yet.
                 </div>
               ) : (
                 sharedFiles.map(({ attachment, chatMessage }) => (

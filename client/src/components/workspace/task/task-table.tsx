@@ -16,6 +16,8 @@ import useGetProjectsInWorkspaceQuery from "@/hooks/api/use-get-projects";
 import useGetWorkspaceMembers from "@/hooks/api/use-get-workspace-members";
 import { getAvatarColor, getAvatarFallbackText } from "@/lib/helper";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuthContext } from "@/context/auth-provider";
+import { Permissions } from "@/constant";
 
 type Filters = ReturnType<typeof useTaskTableFilter>[0];
 type SetFilters = ReturnType<typeof useTaskTableFilter>[1];
@@ -36,7 +38,11 @@ const TaskTable = () => {
 
   const [filters, setFilters] = useTaskTableFilter();
   const workspaceId = useWorkspaceId();
-  const columns = getColumns(projectId);
+  const { hasPermission } = useAuthContext();
+  const canManageTasks =
+    hasPermission(Permissions.EDIT_TASK) ||
+    hasPermission(Permissions.DELETE_TASK);
+  const columns = getColumns(projectId, canManageTasks);
 
   const { data, isLoading } = useQuery({
     queryKey: [

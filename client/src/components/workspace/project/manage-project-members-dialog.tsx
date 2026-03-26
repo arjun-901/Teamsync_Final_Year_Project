@@ -97,7 +97,8 @@ const ManageProjectMembersDialog = ({ projectId }: { projectId: string }) => {
         <DialogHeader>
           <DialogTitle>Project Members</DialogTitle>
           <DialogDescription>
-            Manager/admin is project ke liye alag team choose kar sakte hain.
+            Administrators can choose which workspace members should have
+            access to this project.
           </DialogDescription>
         </DialogHeader>
 

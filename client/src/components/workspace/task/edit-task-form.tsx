@@ -171,7 +171,7 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
                   <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
                     {membersOptions.length === 0 ? (
                       <div className="px-2 py-3 text-sm text-muted-foreground">
-                        Is project me abhi koi member add nahi hai.
+                        No members have been added to this project yet.
                       </div>
                     ) : null}
                     {membersOptions.map((option) => (
