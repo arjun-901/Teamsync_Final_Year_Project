@@ -107,7 +107,7 @@ const MeetingRoom: React.FC = () => {
       await queryClient.invalidateQueries({ queryKey: ["meetings", workspaceId] });
       toast({
         title: "Meeting ended",
-        description: "Live call successfully end ho gayi.",
+        description: "The live meeting has ended successfully.",
       });
       navigate(`/workspace/${workspaceId}/meetings`);
     },
@@ -141,7 +141,7 @@ const MeetingRoom: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              {(error as Error | undefined)?.message || "Meeting load nahi ho paayi."}
+              {(error as Error | undefined)?.message || "We were unable to load this meeting."}
             </p>
             <Button onClick={() => navigate(`/workspace/${workspaceId}/meetings`)}>
               Back to meetings
@@ -171,7 +171,8 @@ const MeetingRoom: React.FC = () => {
             </Badge>
             <CardTitle className="text-3xl">{meeting.title}</CardTitle>
             <p className="max-w-2xl text-sm text-slate-200">
-              {meeting.description || "Meeting ready hai. Start karte hi sab members live room join kar sakenge."}
+              {meeting.description ||
+                "This meeting is ready to begin. Once it starts, participants will be able to join the live room."}
             </p>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -190,7 +191,7 @@ const MeetingRoom: React.FC = () => {
                   await navigator.clipboard.writeText(meeting.joinUrl);
                   toast({
                     title: "Invite link copied",
-                    description: "Meeting link clipboard mein copy ho gaya hai.",
+                    description: "The meeting link has been copied to your clipboard.",
                   });
                 }}
               >
@@ -226,7 +227,7 @@ const MeetingRoom: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Yeh meeting end ho chuki hai. Nayi live call ke liye meetings page se dobara start ya create karein.
+              This meeting has already ended. To host another live session, return to the meetings page and create or start a new meeting.
             </p>
             <Button onClick={() => navigate(`/workspace/${workspaceId}/meetings`)}>
               Back to meetings
@@ -270,7 +271,7 @@ const MeetingRoom: React.FC = () => {
           </Badge>
           <CardTitle className="text-3xl">{meeting.title}</CardTitle>
           <p className="max-w-2xl text-sm text-slate-200">
-            Meeting active hai. Aap is call ko minimize karke app ke kisi bhi route par kaam kar sakte ho, call disconnect nahi hogi.
+            This meeting is currently live. You can minimize the call and continue working anywhere in the app without disconnecting.
           </p>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-3">

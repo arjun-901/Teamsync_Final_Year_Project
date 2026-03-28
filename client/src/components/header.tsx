@@ -19,6 +19,7 @@ const Header = () => {
 
   const getPageLabel = (pathname: string) => {
     if (pathname.includes("/project/")) return "Project";
+    if (pathname.includes("/profile")) return "Profile";
     if (pathname.includes("/settings")) return "Settings";
     if (pathname.includes("/tasks")) return "Tasks";
     if (pathname.includes("/members")) return "Members";
@@ -28,13 +29,13 @@ const Header = () => {
 
   const pageHeading = getPageLabel(pathname);
   return (
-    <header className="flex sticky top-0 z-50 bg-white h-12 shrink-0 items-center border-b">
-      <div className="flex flex-1 items-center gap-2 px-3">
+    <header className="flex sticky top-0 z-50 bg-white h-10 shrink-0 items-center border-b">
+      <div className="flex flex-1 items-center gap-2 px-2.5">
         <SidebarTrigger />
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
           <BreadcrumbList>
-            <BreadcrumbItem className="hidden md:block text-[15px]">
+            <BreadcrumbItem className="hidden md:block text-sm">
               {pageHeading ? (
                 <BreadcrumbLink asChild>
                   <Link to={`/workspace/${workspaceId}`}>Dashboard</Link>
@@ -49,7 +50,7 @@ const Header = () => {
             {pageHeading && (
               <>
                 <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem className="text-[15px]">
+                <BreadcrumbItem className="text-sm">
                   <BreadcrumbPage className="line-clamp-1">
                     {pageHeading}
                   </BreadcrumbPage>

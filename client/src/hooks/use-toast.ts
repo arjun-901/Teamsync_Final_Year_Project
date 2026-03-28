@@ -1,194 +1,154 @@
-"use client"
+"use client";
 
-// Inspired by react-hot-toast library
-import * as React from "react"
+import * as React from "react";
+import { Id, ToastContent, toast as notify, UpdateOptions } from "react-toastify";
 
-import type {
-  ToastActionElement,
-  ToastProps,
-} from "@/components/ui/toast"
+type ToastVariant = "default" | "success" | "destructive";
 
-const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+type ToasterToast = {
+  id?: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  variant?: ToastVariant;
+};
 
-type ToasterToast = ToastProps & {
-  id: string
-  title?: React.ReactNode
+const normalizeText = (value?: React.ReactNode) => {
+  if (typeof value !== "string") return value;
+
+  const trimmed = value.trim().replace(/\s+/g, " ");
+  if (!trimmed) return "";
+
+  const normalizedPhrases: Array<[RegExp, string]> = [
+    [/invalid credentials/i, "Invalid email or password."],
+    [/already registered/i, "This account is already registered."],
+    [/email already exists/i, "This email address is already registered."],
+    [/user(name)? already exists/i, "This username is already registered."],
+    [/workspace name is required/i, "Workspace name is required."],
+    [/message required/i, "Please enter a message or attach at least one file."],
+    [/unauthorized/i, "You are not authorized to perform this action."],
+  ];
+
+  const matched = normalizedPhrases.find(([pattern]) => pattern.test(trimmed));
+  const base = matched ? matched[1] : trimmed;
+  const capitalized = base.charAt(0).toUpperCase() + base.slice(1);
+
+  return /[.!?]$/.test(capitalized) ? capitalized : `${capitalized}.`;
+};
+
+const getToastTitle = (variant: ToastVariant, title?: React.ReactNode) => {
+  const normalized = normalizeText(title);
+  if (
+    normalized &&
+    typeof normalized === "string" &&
+    !["Error.", "Success.", "Notice."].includes(normalized)
+  ) {
+    return normalized;
+  }
+
+  if (variant === "success") return "Success";
+  if (variant === "destructive") return undefined;
+  return "Notice";
+};
+
+const getToastBody = (description?: React.ReactNode) => {
+  const normalized = normalizeText(description);
+  return normalized || undefined;
+};
+
+const renderToastContent = (
+  variant: ToastVariant,
+  title?: React.ReactNode,
   description?: React.ReactNode
-  action?: ToastActionElement
-}
+): ToastContent => {
+  const heading = getToastTitle(variant, title);
+  const body = getToastBody(description);
+  const primaryText = heading || body;
+  const secondaryText = heading ? body : undefined;
 
-const actionTypes = {
-  ADD_TOAST: "ADD_TOAST",
-  UPDATE_TOAST: "UPDATE_TOAST",
-  DISMISS_TOAST: "DISMISS_TOAST",
-  REMOVE_TOAST: "REMOVE_TOAST",
-} as const
+  return React.createElement(
+    "div",
+    { className: "space-y-1" },
+    primaryText
+      ? React.createElement(
+          "div",
+          {
+            className: heading
+              ? "text-sm font-semibold leading-5 text-slate-950"
+              : "text-sm font-semibold leading-5 text-slate-950",
+          },
+          primaryText
+        )
+      : null,
+    secondaryText
+      ? React.createElement(
+          "div",
+          { className: "text-sm leading-5 text-slate-600" },
+          secondaryText
+        )
+      : null
+  );
+};
 
-let count = 0
-
-function genId() {
-  count = (count + 1) % Number.MAX_SAFE_INTEGER
-  return count.toString()
-}
-
-type ActionType = typeof actionTypes
-
-type Action =
-  | {
-      type: ActionType["ADD_TOAST"]
-      toast: ToasterToast
-    }
-  | {
-      type: ActionType["UPDATE_TOAST"]
-      toast: Partial<ToasterToast>
-    }
-  | {
-      type: ActionType["DISMISS_TOAST"]
-      toastId?: ToasterToast["id"]
-    }
-  | {
-      type: ActionType["REMOVE_TOAST"]
-      toastId?: ToasterToast["id"]
-    }
-
-interface State {
-  toasts: ToasterToast[]
-}
-
-const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
-
-const addToRemoveQueue = (toastId: string) => {
-  if (toastTimeouts.has(toastId)) {
-    return
+const getToastOptions = (variant: ToastVariant) => {
+  if (variant === "success") {
+    return {
+      type: "success" as const,
+      className:
+        "!rounded-2xl !border !border-emerald-200 !bg-white !shadow-xl",
+      progressClassName: "!bg-emerald-500",
+    };
   }
 
-  const timeout = setTimeout(() => {
-    toastTimeouts.delete(toastId)
-    dispatch({
-      type: "REMOVE_TOAST",
-      toastId: toastId,
-    })
-  }, TOAST_REMOVE_DELAY)
-
-  toastTimeouts.set(toastId, timeout)
-}
-
-export const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case "ADD_TOAST":
-      return {
-        ...state,
-        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
-      }
-
-    case "UPDATE_TOAST":
-      return {
-        ...state,
-        toasts: state.toasts.map((t) =>
-          t.id === action.toast.id ? { ...t, ...action.toast } : t
-        ),
-      }
-
-    case "DISMISS_TOAST": {
-      const { toastId } = action
-
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
-      if (toastId) {
-        addToRemoveQueue(toastId)
-      } else {
-        state.toasts.forEach((toast) => {
-          addToRemoveQueue(toast.id)
-        })
-      }
-
-      return {
-        ...state,
-        toasts: state.toasts.map((t) =>
-          t.id === toastId || toastId === undefined
-            ? {
-                ...t,
-                open: false,
-              }
-            : t
-        ),
-      }
-    }
-    case "REMOVE_TOAST":
-      if (action.toastId === undefined) {
-        return {
-          ...state,
-          toasts: [],
-        }
-      }
-      return {
-        ...state,
-        toasts: state.toasts.filter((t) => t.id !== action.toastId),
-      }
+  if (variant === "destructive") {
+    return {
+      type: "error" as const,
+      className:
+        "!rounded-2xl !border !border-rose-200 !bg-white !shadow-xl",
+      progressClassName: "!bg-rose-500",
+    };
   }
-}
-
-const listeners: Array<(state: State) => void> = []
-
-let memoryState: State = { toasts: [] }
-
-function dispatch(action: Action) {
-  memoryState = reducer(memoryState, action)
-  listeners.forEach((listener) => {
-    listener(memoryState)
-  })
-}
-
-type Toast = Omit<ToasterToast, "id">
-
-function toast({ ...props }: Toast) {
-  const id = genId()
-
-  const update = (props: ToasterToast) =>
-    dispatch({
-      type: "UPDATE_TOAST",
-      toast: { ...props, id },
-    })
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
-
-  dispatch({
-    type: "ADD_TOAST",
-    toast: {
-      ...props,
-      id,
-      open: true,
-      onOpenChange: (open) => {
-        if (!open) dismiss()
-      },
-    },
-  })
 
   return {
-    id: id,
+    type: "default" as const,
+    className: "!rounded-2xl !border !border-slate-200 !bg-white !shadow-xl",
+    progressClassName: "!bg-blue-500",
+  };
+};
+
+type Toast = Omit<ToasterToast, "id">;
+
+function toast({ title, description, variant = "default" }: Toast) {
+  const toastId = notify(renderToastContent(variant, title, description), {
+    ...getToastOptions(variant),
+    position: "bottom-right",
+    autoClose: 3200,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+  });
+
+  const dismiss = () => notify.dismiss(toastId);
+  const update = (props: Partial<ToasterToast>) => {
+    const nextVariant = props.variant || variant;
+    notify.update(toastId, {
+      render: renderToastContent(nextVariant, props.title ?? title, props.description ?? description),
+      ...getToastOptions(nextVariant),
+    } as UpdateOptions);
+  };
+
+  return {
+    id: String(toastId),
     dismiss,
     update,
-  }
+  };
 }
 
 function useToast() {
-  const [state, setState] = React.useState<State>(memoryState)
-
-  React.useEffect(() => {
-    listeners.push(setState)
-    return () => {
-      const index = listeners.indexOf(setState)
-      if (index > -1) {
-        listeners.splice(index, 1)
-      }
-    }
-  }, [state])
-
   return {
-    ...state,
+    toasts: [],
     toast,
-    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
-  }
+    dismiss: (toastId?: string) => notify.dismiss(toastId as Id | undefined),
+  };
 }
 
-export { useToast, toast }
+export { useToast, toast };

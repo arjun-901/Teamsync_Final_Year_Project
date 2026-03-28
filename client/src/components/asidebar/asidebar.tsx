@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { EllipsisIcon, Loader, LogOut } from "lucide-react";
+import { EllipsisIcon, Loader, LogOut, UserCircle2 } from "lucide-react";
 import {
   Sidebar,
   SidebarHeader,
@@ -31,6 +30,7 @@ import { NavProjects } from "./nav-projects";
 import { Separator } from "../ui/separator";
 import useWorkspaceId from "@/hooks/use-workspace-id";
 import { useAuthContext } from "@/context/auth-provider";
+import { Link } from "react-router-dom";
 
 const Asidebar = () => {
   const { isLoading, user } = useAuthContext();
@@ -44,16 +44,16 @@ const Asidebar = () => {
     <>
       <Sidebar collapsible="icon">
         <SidebarHeader className="!py-0 dark:bg-background">
-          <div className="flex h-[50px] items-center justify-start w-full px-1">
-            <Logo url={`/workspace/${workspaceId}`} />
-            {open && (
-              <Link
-                to={`/workspace/${workspaceId}`}
-                className="hidden md:flex ml-2 items-center gap-2 self-center font-medium"
-              >
-                Team Sync.
-              </Link>
-            )}
+          <div className="flex h-[44px] items-center justify-start w-full px-1">
+            <Logo
+              url={`/`}
+              className="flex items-center justify-start"
+              imageClassName={
+                open
+                  ? "h-8 w-auto object-contain"
+                  : "h-8 w-8 rounded-lg object-cover object-left"
+              }
+            />
           </div>
         </SidebarHeader>
         <SidebarContent className=" !mt-0 dark:bg-background">
@@ -104,7 +104,14 @@ const Asidebar = () => {
                     align="start"
                     sideOffset={4}
                   >
-                    <DropdownMenuGroup></DropdownMenuGroup>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem asChild>
+                        <Link to={`/workspace/${workspaceId}/profile`}>
+                          <UserCircle2 />
+                          Profile Settings
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setIsOpen(true)}>
                       <LogOut />

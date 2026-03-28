@@ -7,7 +7,7 @@ import {
 } from "../validation/task.validation";
 import { projectIdSchema } from "../validation/project.validation";
 import { workspaceIdSchema } from "../validation/workspace.validation";
-import { Permissions } from "../enums/role.enum";
+import { Permissions, Roles } from "../enums/role.enum";
 import { getMemberRoleInWorkspace } from "../services/member.service";
 import { roleGuard } from "../utils/roleGuard";
 import {
@@ -56,7 +56,9 @@ export const updateTaskController = asyncHandler(
     const workspaceId = workspaceIdSchema.parse(req.params.workspaceId);
 
     const { role } = await getMemberRoleInWorkspace(userId, workspaceId);
-    roleGuard(role, [Permissions.EDIT_TASK]);
+    if (role !== Roles.MEMBER) {
+      roleGuard(role, [Permissions.EDIT_TASK]);
+    }
 
     const { updatedTask } = await updateTaskService(
       workspaceId,

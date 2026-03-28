@@ -22,7 +22,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const getColumns = (
   projectId?: string,
-  canManageTasks = false
+  canManageTasks = false,
+  canUpdateTaskStatus = false
 ): ColumnDef<TaskType>[] => {
   const columns: ColumnDef<TaskType>[] = [
     {
@@ -207,7 +208,7 @@ export const getColumns = (
         );
       },
     },
-    ...(canManageTasks
+    ...(canManageTasks || canUpdateTaskStatus
       ? [
           {
             id: "actions",

@@ -21,6 +21,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const featureItems = [
   {
@@ -89,13 +90,14 @@ const Home = () => {
 
   return (
     <main className="min-h-svh bg-[radial-gradient(circle_at_top_left,_rgba(249,115,22,0.14),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(14,165,233,0.16),_transparent_30%),linear-gradient(180deg,#fffdf8_0%,#fff 42%,#f8fafc_100%)] text-slate-950">
-      <section className="px-4 pb-12 pt-4 sm:px-6 md:px-10 lg:px-16">
+      <section className="px-3 pb-8 pt-3 sm:px-6 sm:pb-12 sm:pt-4 md:px-10 lg:px-16">
         <div className="mx-auto flex min-h-svh max-w-7xl flex-col">
-          <header className="flex items-center justify-between rounded-[24px] border border-slate-300/80 bg-slate-200/90 px-4 py-3 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur sm:px-5 md:bg-slate-200/80">
-            <div className="flex items-center gap-3 font-semibold">
-              <Logo url={BASE_ROUTE.HOME} />
-              <Link to={BASE_ROUTE.HOME}>Team Sync.</Link>
-            </div>
+          <header className="flex items-center justify-between rounded-[20px] border border-orange-200/80 bg-slate-200/90 px-3 py-2 shadow-[0_20px_60px_rgba(15,23,42,0.08)] ring-1 ring-sky-200/70 backdrop-blur sm:rounded-[24px] sm:px-5 sm:py-2.5 md:bg-slate-200/80">
+            <Logo
+              url={BASE_ROUTE.HOME}
+              className="flex items-center"
+              imageClassName="h-8 w-auto object-contain sm:h-10"
+            />
 
             <nav className="hidden flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-600 sm:text-sm md:flex">
               <Link
@@ -112,7 +114,7 @@ const Home = () => {
               </Link>
               {user ? (
                 <Link to={dashboardPath}>
-                  <Button className="h-9 rounded-full bg-slate-950 px-4 text-xs text-white hover:bg-slate-800 sm:h-10 sm:px-5 sm:text-sm">
+                  <Button className="h-8 rounded-full bg-slate-950 px-4 text-xs text-white hover:bg-slate-800 sm:h-10 sm:px-5 sm:text-sm">
                     Go to dashboard
                   </Button>
                 </Link>
@@ -120,12 +122,12 @@ const Home = () => {
                 !isLoading && (
                   <>
                     <Link to={AUTH_ROUTES.SIGN_IN}>
-                      <Button variant="ghost" className="h-9 rounded-full px-3 text-xs sm:h-10 sm:text-sm">
+                      <Button variant="ghost" className="h-8 rounded-full px-3 text-xs sm:h-10 sm:text-sm">
                         Sign in
                       </Button>
                     </Link>
                     <Link to={AUTH_ROUTES.SIGN_UP}>
-                      <Button className="h-9 rounded-full bg-slate-950 px-4 text-xs text-white hover:bg-slate-800 sm:h-10 sm:px-5 sm:text-sm">
+                      <Button className="h-8 rounded-full bg-slate-950 px-4 text-xs text-white hover:bg-slate-800 sm:h-10 sm:px-5 sm:text-sm">
                         Get started
                       </Button>
                     </Link>
@@ -140,7 +142,7 @@ const Home = () => {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="flex size-10 items-center justify-center rounded-full border-slate-300 bg-white shadow-sm"
+                    className="flex size-9 items-center justify-center rounded-full border-slate-300 bg-white shadow-sm"
                   >
                     <MoreVertical className="size-4" />
                   </Button>
@@ -173,18 +175,18 @@ const Home = () => {
             </div>
           </header>
 
-          <div className="flex flex-1 items-center py-10 sm:py-14">
+          <div className="flex flex-1 items-center py-8 sm:py-14">
             <div className="w-full space-y-6 text-center">
-              <Badge className="mx-auto inline-flex rounded-full border-0 bg-orange-100 px-3 py-1 text-xs text-orange-700 hover:bg-orange-100 sm:px-4 sm:py-1.5 sm:text-sm">
-                <Sparkles className="mr-2 size-4" />
+              <Badge className="mx-auto inline-flex rounded-full border border-orange-300/80 bg-orange-100 px-2.5 py-1 text-[11px] text-orange-700 hover:bg-orange-100 sm:px-4 sm:py-1.5 sm:text-sm">
+                <Sparkles className="mr-1.5 size-3.5 sm:size-4" />
                 Built for focused team execution
               </Badge>
 
               <div className="mx-auto max-w-full space-y-4">
-                <h1 className="text-3xl text-center font-semibold leading-[1.05] tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
+                <h1 className="text-2xl text-center font-semibold leading-[1.08] tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
                   Manage projects, tasks, meetings, and momentum in one beautiful workspace.
                 </h1>
-                <p className="mx-auto max-w-3xl text-base leading-7 text-slate-600 sm:text-sm sm:leading-8">
+                <p className="mx-auto max-w-3xl text-sm leading-6 text-slate-600 sm:text-base sm:leading-8">
                   Team Sync helps student teams and modern project groups stay aligned
                   with clear ownership, faster collaboration, and real-time visibility
                   into progress.
@@ -195,12 +197,12 @@ const Home = () => {
                 {user ? (
                   <>
                     <Link to={dashboardPath}>
-                      <Button className="h-11 w-full rounded-full bg-slate-950 px-5 text-sm text-white hover:bg-slate-800 sm:w-auto sm:px-6">
+                      <Button className="h-10 w-full rounded-full bg-slate-950 px-5 text-sm text-white hover:bg-slate-800 sm:h-11 sm:w-auto sm:px-6">
                         Open dashboard
                         <ArrowRight className="ml-2 size-4" />
                       </Button>
                     </Link>
-                    <div className="flex min-h-11 items-center rounded-full border border-slate-200 bg-white px-5 text-sm text-slate-600">
+                    <div className="flex min-h-10 items-center rounded-full border border-slate-200 bg-white px-4 text-xs text-slate-600 sm:min-h-11 sm:px-5 sm:text-sm">
                       Signed in as {user.name || user.email}
                     </div>
                   </>
@@ -208,7 +210,7 @@ const Home = () => {
                   !isLoading && (
                     <>
                       <Link to={AUTH_ROUTES.SIGN_UP}>
-                        <Button className="h-11 w-full rounded-full bg-slate-950 px-5 text-sm text-white hover:bg-slate-800 sm:w-auto sm:px-6">
+                        <Button className="h-10 w-full rounded-full bg-slate-950 px-5 text-sm text-white hover:bg-slate-800 sm:h-11 sm:w-auto sm:px-6">
                           Start for free
                           <ArrowRight className="ml-2 size-4" />
                         </Button>
@@ -216,7 +218,7 @@ const Home = () => {
                       <Link to={AUTH_ROUTES.SIGN_IN}>
                         <Button
                           variant="outline"
-                          className="h-11 w-full rounded-full border-slate-300 bg-white px-5 text-sm sm:w-auto sm:px-6"
+                          className="h-10 w-full rounded-full border-slate-300 bg-white px-5 text-sm sm:h-11 sm:w-auto sm:px-6"
                         >
                           Sign in to workspace
                         </Button>
@@ -227,15 +229,20 @@ const Home = () => {
               </div>
 
               <div className="grid gap-3 pt-2 sm:grid-cols-2 lg:grid-cols-3">
-                {stats.map((item) => (
+                {stats.map((item, index) => (
                   <div
                     key={item.value}
-                    className="rounded-[24px] border border-slate-200 bg-white/85 p-4 shadow-sm sm:p-5"
+                    className={cn(
+                      "rounded-[20px] border bg-white/85 p-3 shadow-sm sm:rounded-[24px] sm:p-5",
+                      index % 3 === 0 && "border-orange-200",
+                      index % 3 === 1 && "border-sky-200",
+                      index % 3 === 2 && "border-emerald-200"
+                    )}
                   >
-                    <p className="text-base font-semibold text-slate-900 sm:text-lg">
+                    <p className="text-sm font-semibold text-slate-900 sm:text-lg">
                       {item.value}
                     </p>
-                    <p className="mt-1 text-sm leading-6 text-slate-500">
+                    <p className="mt-1 text-xs leading-5 text-slate-500 sm:text-sm sm:leading-6">
                       {item.label}
                     </p>
                   </div>
@@ -246,38 +253,44 @@ const Home = () => {
         </div>
       </section>
 
-      <section id="features" className="px-6 py-16 md:px-10 lg:px-16">
+      <section id="features" className="px-3 py-10 sm:px-6 sm:py-16 md:px-10 lg:px-16">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-2xl space-y-3">
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-orange-600">
               Features
             </p>
-            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            <h2 className="text-2xl font-semibold tracking-tight md:text-4xl">
               Everything your team needs to stay aligned and ship with confidence.
             </h2>
-            <p className="text-base leading-7 text-slate-600">
+            <p className="text-sm leading-6 text-slate-600 sm:text-base sm:leading-7">
               Designed for collaborative workspaces that need visibility without
               complexity.
             </p>
           </div>
 
           <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {featureItems.map((feature) => {
+            {featureItems.map((feature, index) => {
               const Icon = feature.icon;
 
               return (
                 <Card
                   key={feature.title}
-                  className="rounded-[28px] border-slate-200 bg-white/80 shadow-none transition-transform duration-300 hover:-translate-y-1"
+                  className={cn(
+                    "rounded-[22px] border bg-white/80 shadow-none transition-transform duration-300 hover:-translate-y-1 sm:rounded-[28px]",
+                    index % 4 === 0 && "border-orange-200",
+                    index % 4 === 1 && "border-sky-200",
+                    index % 4 === 2 && "border-emerald-200",
+                    index % 4 === 3 && "border-violet-200"
+                  )}
                 >
-                  <CardContent className="p-6">
-                    <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-950 text-white">
-                      <Icon className="size-5" />
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-slate-950 text-white sm:size-12 sm:rounded-2xl">
+                      <Icon className="size-4 sm:size-5" />
                     </div>
-                    <h3 className="mt-5 text-xl font-semibold text-slate-900">
+                    <h3 className="mt-4 text-lg font-semibold text-slate-900 sm:mt-5 sm:text-xl">
                       {feature.title}
                     </h3>
-                    <p className="mt-3 text-sm leading-7 text-slate-600">
+                    <p className="mt-2 text-xs leading-6 text-slate-600 sm:mt-3 sm:text-sm sm:leading-7">
                       {feature.description}
                     </p>
                   </CardContent>
@@ -288,16 +301,16 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="px-6 py-16 md:px-10 lg:px-16">
-        <div className="mx-auto grid max-w-7xl gap-6 rounded-[36px] border border-slate-200 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_55%,#eff6ff_100%)] p-8 shadow-sm lg:grid-cols-[0.9fr_1.1fr] lg:p-10">
+      <section className="px-3 py-10 sm:px-6 sm:py-16 md:px-10 lg:px-16">
+        <div className="mx-auto grid max-w-7xl gap-5 rounded-[26px] border border-sky-200 bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_55%,#eff6ff_100%)] p-5 shadow-sm sm:rounded-[36px] sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:p-10">
           <div className="space-y-4">
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-sky-700">
               Why teams choose us
             </p>
-            <h2 className="text-3xl font-semibold tracking-tight">
+            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
               Turn scattered work into a clear system everyone can trust.
             </h2>
-            <p className="text-base leading-7 text-slate-600">
+            <p className="text-sm leading-6 text-slate-600 sm:text-base sm:leading-7">
               Team Sync keeps planning, updates, and delivery insight close together
               so your team can spend less time coordinating and more time building.
             </p>
@@ -311,9 +324,9 @@ const Home = () => {
             ].map((item) => (
               <div
                 key={item}
-                className="rounded-3xl border border-white/80 bg-white/80 p-5 text-sm font-medium text-slate-700 shadow-sm"
+                className="rounded-2xl border border-white/80 bg-white/80 p-4 text-xs font-medium text-slate-700 shadow-sm sm:rounded-3xl sm:p-5 sm:text-sm"
               >
-                <CheckCircle2 className="mb-3 size-5 text-emerald-500" />
+                <CheckCircle2 className="mb-2 size-4 text-emerald-500 sm:mb-3 sm:size-5" />
                 {item}
               </div>
             ))}
@@ -321,30 +334,35 @@ const Home = () => {
         </div>
       </section>
 
-      <section id="testimonials" className="px-6 py-16 md:px-10 lg:px-16">
+      <section id="testimonials" className="px-3 py-10 sm:px-6 sm:py-16 md:px-10 lg:px-16">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-2xl space-y-3">
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-orange-600">
               Testimonials
             </p>
-            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            <h2 className="text-2xl font-semibold tracking-tight md:text-4xl">
               Teams love the clarity they get from one shared workspace.
             </h2>
           </div>
 
           <div className="mt-8 grid gap-5 lg:grid-cols-3">
-            {testimonials.map((item) => (
+            {testimonials.map((item, index) => (
               <Card
                 key={item.name}
-                className="rounded-[28px] border-slate-800 bg-slate-900 text-white shadow-none"
+                className={cn(
+                  "rounded-[22px] bg-slate-900 text-white shadow-none sm:rounded-[28px]",
+                  index % 3 === 0 && "border-orange-300/60",
+                  index % 3 === 1 && "border-sky-300/60",
+                  index % 3 === 2 && "border-emerald-300/60"
+                )}
               >
-                <CardContent className="p-6">
-                  <p className="text-base leading-8 text-slate-100">
+                <CardContent className="p-4 sm:p-6">
+                  <p className="text-sm leading-7 text-slate-100 sm:text-base sm:leading-8">
                     &ldquo;{item.quote}&rdquo;
                   </p>
-                  <div className="mt-8">
-                    <p className="font-semibold">{item.name}</p>
-                    <p className="text-sm text-slate-300">{item.role}</p>
+                  <div className="mt-6 sm:mt-8">
+                    <p className="text-sm font-semibold sm:text-base">{item.name}</p>
+                    <p className="text-xs text-slate-300 sm:text-sm">{item.role}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -353,22 +371,22 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="px-6 pb-20 pt-8 md:px-10 lg:px-16">
-        <div className="mx-auto max-w-5xl rounded-[36px] bg-slate-950 px-8 py-10 text-center text-white shadow-[0_30px_90px_rgba(15,23,42,0.18)] md:px-12 md:py-14">
+      <section className="px-3 pb-12 pt-4 sm:px-6 sm:pb-20 sm:pt-8 md:px-10 lg:px-16">
+        <div className="mx-auto max-w-5xl rounded-[24px] border border-violet-300/40 bg-slate-950 px-5 py-8 text-center text-white shadow-[0_30px_90px_rgba(15,23,42,0.18)] sm:rounded-[36px] sm:px-8 sm:py-10 md:px-12 md:py-14">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-300">
             Ready to start
           </p>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
+          <h2 className="mt-4 text-2xl font-semibold tracking-tight md:text-4xl">
             Build a more organized, more collaborative workspace with Team Sync.
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-300">
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base sm:leading-7">
             Launch your workspace, invite your team, and manage everything from one
             place.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             {user ? (
               <Link to={dashboardPath}>
-                <Button className="h-12 rounded-full bg-white px-6 text-slate-950 hover:bg-slate-100">
+                <Button className="h-10 rounded-full bg-white px-5 text-slate-950 hover:bg-slate-100 sm:h-12 sm:px-6">
                   Go to dashboard
                 </Button>
               </Link>
@@ -376,14 +394,14 @@ const Home = () => {
               !isLoading && (
                 <>
                   <Link to={AUTH_ROUTES.SIGN_UP}>
-                    <Button className="h-12 rounded-full bg-white px-6 text-slate-950 hover:bg-slate-100">
+                    <Button className="h-10 rounded-full bg-white px-5 text-slate-950 hover:bg-slate-100 sm:h-12 sm:px-6">
                       Create account
                     </Button>
                   </Link>
                   <Link to={AUTH_ROUTES.SIGN_IN}>
                     <Button
                       variant="outline"
-                      className="h-12 rounded-full border-white/20 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white"
+                      className="h-10 rounded-full border-white/20 bg-transparent px-5 text-white hover:bg-white/10 hover:text-white sm:h-12 sm:px-6"
                     >
                       Go to sign in
                     </Button>
@@ -395,8 +413,8 @@ const Home = () => {
         </div>
       </section>
 
-      <footer className="border-t border-slate-200/80 bg-white/70 px-4 py-5 backdrop-blur sm:px-6 md:px-10 lg:px-16">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 text-center text-sm text-slate-600 sm:flex-row sm:text-left">
+      <footer className="border-t border-slate-200/80 bg-white/70 px-3 py-4 backdrop-blur sm:px-6 sm:py-5 md:px-10 lg:px-16">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 text-center text-xs text-slate-600 sm:flex-row sm:gap-3 sm:text-left sm:text-sm">
           <p>© 2026 Team Sync. Built for organized teamwork.</p>
           <div className="flex items-center gap-4">
             <Link

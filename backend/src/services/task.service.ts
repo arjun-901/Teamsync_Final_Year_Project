@@ -78,10 +78,10 @@ export const updateTaskService = async (
   userId: string,
   role: string,
   body: {
-    title: string;
+    title?: string;
     description?: string;
-    priority: string;
-    status: string;
+    priority?: string;
+    status?: string;
     assignedTo?: string | null;
     dueDate?: string;
   }
@@ -112,6 +112,27 @@ export const updateTaskService = async (
     throw new NotFoundException(
       "Task not found or does not belong to this project"
     );
+  }
+
+  if (role === Roles.MEMBER) {
+    if (task.assignedTo?.toString() !== userId.toString()) {
+      throw new NotFoundException("Task not found.");
+    }
+
+    const allowedKeys = ["status"];
+    const providedKeys = Object.keys(body).filter(
+      (key) => body[key as keyof typeof body] !== undefined
+    );
+
+    const isOnlyStatusUpdate =
+      providedKeys.length > 0 &&
+      providedKeys.every((key) => allowedKeys.includes(key));
+
+    if (!isOnlyStatusUpdate) {
+      throw new BadRequestException(
+        "Members can only update the status of their assigned tasks."
+      );
+    }
   }
 
   if (body.assignedTo) {

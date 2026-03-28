@@ -14,10 +14,11 @@ const InfoPageShell = (props: {
     <main className="min-h-svh bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] px-4 py-8 sm:px-6 md:px-10">
       <div className="mx-auto max-w-4xl space-y-6">
         <header className="flex items-center justify-between rounded-[24px] border border-slate-200 bg-white px-4 py-3 shadow-sm sm:px-5">
-          <div className="flex items-center gap-3 font-semibold text-slate-900">
-            <Logo url={BASE_ROUTE.HOME} />
-            <Link to={BASE_ROUTE.HOME}>Team Sync.</Link>
-          </div>
+          <Logo
+            url={BASE_ROUTE.HOME}
+            className="flex items-center"
+            imageClassName="h-11 w-auto object-contain"
+          />
           <Link
             to={AUTH_ROUTES.SIGN_IN}
             className="text-sm text-slate-600 transition-colors hover:text-slate-950"

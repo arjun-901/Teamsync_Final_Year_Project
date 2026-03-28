@@ -42,6 +42,16 @@ export type CurrentUserResponseType = {
   user: UserType;
 };
 
+export type UpdateCurrentUserProfilePayloadType = {
+  data: FormData;
+};
+
+export type ChangeCurrentUserPasswordPayloadType = {
+  currentPassword?: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
 //******** */ WORLSPACE TYPES ****************
 // ******************************************
 export type WorkspaceType = {

@@ -35,10 +35,16 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { TaskType } from "@/types/api.type";
 import useGetProjectMembers from "@/hooks/api/use-get-project-members";
+import { useAuthContext } from "@/context/auth-provider";
+import { Permissions } from "@/constant";
 
 export default function EditTaskForm({ task, onClose }: { task: TaskType; onClose: () => void }) {
   const queryClient = useQueryClient();
   const workspaceId = useWorkspaceId();
+  const { hasPermission, user } = useAuthContext();
+  const canFullyEditTask = hasPermission(Permissions.EDIT_TASK);
+  const canUpdateOwnTaskStatus = task.assignedTo?._id === user?._id;
+  const isStatusOnlyMode = !canFullyEditTask && canUpdateOwnTaskStatus;
 
   const { mutate, isPending } = useMutation({
     mutationFn: editTaskMutationFn,
@@ -105,14 +111,20 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     if (isPending) return;
 
+    const formData = isStatusOnlyMode
+      ? {
+          status: values.status,
+        }
+      : {
+          ...values,
+          dueDate: values.dueDate.toISOString(),
+        };
+
     const payload = {
       workspaceId,
       projectId: task.project?._id ?? "",
       taskId: task._id,
-      data: {
-        ...values,
-        dueDate: values.dueDate.toISOString(),
-      },
+      data: formData,
     };
 
     mutate(payload, {
@@ -120,7 +132,9 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
         queryClient.invalidateQueries({ queryKey: ["all-tasks", workspaceId] });
         toast({
           title: "Success",
-          description: "Task updated successfully",
+          description: isStatusOnlyMode
+            ? "Task status updated successfully"
+            : "Task updated successfully",
           variant: "success",
         });
         onClose();
@@ -139,73 +153,74 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
     <div className="w-full h-auto max-w-full">
       <div className="h-full">
         <div className="mb-5 pb-2 border-b">
-          <h1 className="text-xl font-semibold text-center sm:text-left">Edit Task</h1>
+          <h1 className="text-xl font-semibold text-center sm:text-left">
+            {isStatusOnlyMode ? "Update Task Status" : "Edit Task"}
+          </h1>
         </div>
         <Form {...form}>
           <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
-            {/* Title */}
-            <FormField control={form.control} name="title" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Task Title</FormLabel>
-                <FormControl><Input {...field} placeholder="Task title" /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            {!isStatusOnlyMode ? (
+              <>
+                <FormField control={form.control} name="title" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Task Title</FormLabel>
+                    <FormControl><Input {...field} placeholder="Task title" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
-            {/* Description */}
-            <FormField control={form.control} name="description" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Task Description</FormLabel>
-                <FormControl><Textarea {...field} rows={2} placeholder="Description" /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+                <FormField control={form.control} name="description" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Task Description</FormLabel>
+                    <FormControl><Textarea {...field} rows={2} placeholder="Description" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
-            {/* Assigned To */}
-            <FormField control={form.control} name="assignedTo" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Assigned To</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
-                  <FormControl><SelectTrigger><SelectValue placeholder="Select an assignee" /></SelectTrigger></FormControl>
-                  <SelectContent>
-                  <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
-                    {membersOptions.length === 0 ? (
-                      <div className="px-2 py-3 text-sm text-muted-foreground">
-                        No members have been added to this project yet.
-                      </div>
-                    ) : null}
-                    {membersOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                    ))}
-                    </div>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )} />
+                <FormField control={form.control} name="assignedTo" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Assigned To</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
+                      <FormControl><SelectTrigger><SelectValue placeholder="Select an assignee" /></SelectTrigger></FormControl>
+                      <SelectContent>
+                      <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
+                        {membersOptions.length === 0 ? (
+                          <div className="px-2 py-3 text-sm text-muted-foreground">
+                            No members have been added to this project yet.
+                          </div>
+                        ) : null}
+                        {membersOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                        ))}
+                        </div>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )} />
 
-            {/* Due Date */}
-            <FormField control={form.control} name="dueDate" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Due Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button variant="outline">
-                        {field.value ? format(field.value, "PPP") : "Pick a date"}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <Calendar mode="single" selected={field.value} onSelect={field.onChange} />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )} />
+                <FormField control={form.control} name="dueDate" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Due Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button variant="outline">
+                            {field.value ? format(field.value, "PPP") : "Pick a date"}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </>
+            ) : null}
 
-            {/* Status */}
             <FormField control={form.control} name="status" render={({ field }) => (
               <FormItem>
                 <FormLabel>Status</FormLabel>
@@ -221,25 +236,26 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
               </FormItem>
             )} />
 
-            {/* Priority */}
-            <FormField control={form.control} name="priority" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Priority</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
-                  <FormControl><SelectTrigger><SelectValue placeholder="Select priority" /></SelectTrigger></FormControl>
-                  <SelectContent>
-                    {priorityOptions.map((priority) => (
-                      <SelectItem key={priority.value} value={priority.value}>{priority.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )} />
+            {!isStatusOnlyMode ? (
+              <FormField control={form.control} name="priority" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Priority</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
+                    <FormControl><SelectTrigger><SelectValue placeholder="Select priority" /></SelectTrigger></FormControl>
+                    <SelectContent>
+                      {priorityOptions.map((priority) => (
+                        <SelectItem key={priority.value} value={priority.value}>{priority.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            ) : null}
 
             <Button type="submit" className="w-full" disabled={isPending}>
               {isPending && <Loader className="animate-spin" />}
-              Save Changes
+              {isStatusOnlyMode ? "Submit Status Update" : "Save Changes"}
             </Button>
           </form>
         </Form>

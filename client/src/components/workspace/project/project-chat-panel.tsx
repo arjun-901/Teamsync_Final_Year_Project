@@ -207,9 +207,9 @@ const ProjectChatPanel = () => {
         href={attachment.url}
         target="_blank"
         rel="noreferrer"
-        className="flex items-center gap-3 rounded-lg border bg-background/70 px-3 py-2"
+        className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5"
       >
-        <span className="rounded-full bg-muted p-2">
+        <span className="rounded-full border border-slate-200 bg-slate-50 p-2">
           <AttachmentIcon className="size-4" />
         </span>
         <span className="min-w-0 flex-1">
@@ -234,9 +234,9 @@ const ProjectChatPanel = () => {
         className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
       >
         <div
-          className={`max-w-[85%] rounded-2xl border px-4 py-3 shadow-sm md:max-w-[70%] ${
+          className={`max-w-[88%] rounded-2xl border px-3.5 py-3 shadow-sm md:max-w-[72%] ${
             isOwnMessage
-              ? "border-emerald-200 bg-emerald-50"
+              ? "border-blue-300 bg-white"
               : "border-slate-200 bg-white"
           }`}
         >
@@ -261,7 +261,7 @@ const ProjectChatPanel = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8"
+                className="size-7 rounded-full border border-slate-200"
                 disabled={isDeleting}
                 onClick={() =>
                   deleteMessage({
@@ -277,7 +277,7 @@ const ProjectChatPanel = () => {
           </div>
 
           {chatMessage.message ? (
-            <p className="whitespace-pre-wrap break-words text-sm leading-6">
+            <p className="whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">
               {chatMessage.message}
             </p>
           ) : null}
@@ -297,18 +297,20 @@ const ProjectChatPanel = () => {
   };
 
   return (
-    <Card className="border-slate-200">
-      <CardHeader className="space-y-4">
+    <Card
+      className="flex h-full min-h-0 flex-col overflow-hidden rounded-[22px] border-2 border-blue-300 bg-white shadow-sm"
+      style={{ height: "calc(100svh - 5rem)" }}
+    >
+      <CardHeader className="space-y-3 border-b border-slate-200 bg-slate-50/70 p-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <MessageSquare className="size-5" />
-              {projectData?.project?.emoji} {projectData?.project?.name} Chat
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-950">
+              <MessageSquare className="size-4.5 text-blue-600" />
+              {projectData?.project?.emoji} {projectData?.project?.name} Discussion
             </CardTitle>
-            <CardDescription>
-              Project members and administrators can collaborate here by
-              sharing messages and files. Messages are retained unless they are
-              manually removed.
+            <CardDescription className="mt-1 text-sm text-slate-500">
+              Collaborate with project members, share updates, and keep files in one
+              focused workspace.
             </CardDescription>
           </div>
           <Tabs
@@ -322,28 +324,31 @@ const ProjectChatPanel = () => {
               setSearchParams({});
             }}
           >
-            <TabsList>
-              <TabsTrigger value="chat">Chat</TabsTrigger>
-              <TabsTrigger value="files">Shared Files</TabsTrigger>
+            <TabsList className="h-9 rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+              <TabsTrigger className="rounded-lg px-3 py-1 text-xs sm:text-sm" value="chat">
+                Messages
+              </TabsTrigger>
+              <TabsTrigger className="rounded-lg px-3 py-1 text-xs sm:text-sm" value="files">
+                Files
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="flex min-h-0 flex-1 flex-col space-y-3 p-4">
         {currentTab === "chat" ? (
           <>
-            <ScrollArea className="h-[52vh] rounded-xl border bg-slate-50/60 p-4">
-              <div className="space-y-4 pr-4">
+            <ScrollArea className="min-h-0 flex-1 rounded-2xl border border-slate-200 bg-white p-3">
+              <div className="space-y-3 pr-3">
                 {isPending ? (
                   <div className="flex items-center justify-center py-10 text-sm text-muted-foreground">
                     <Loader2 className="mr-2 size-4 animate-spin" />
-                    Loading chat...
+                    Loading conversation...
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="py-10 text-center text-sm text-muted-foreground">
-                    No messages have been shared yet. Start the conversation by
-                    sending the first message.
+                    No messages yet. Start the conversation with the first update.
                   </div>
                 ) : (
                   messages.map(renderMessage)
@@ -352,17 +357,17 @@ const ProjectChatPanel = () => {
               </div>
             </ScrollArea>
 
-            <div className="rounded-xl border bg-white p-4">
+            <div className="shrink-0 rounded-2xl border-2 border-slate-200 bg-white p-3">
               <Textarea
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
-                placeholder="Message likhiye ya file attach kijiye..."
-                className="min-h-28 resize-none border-0 px-0 shadow-none focus-visible:ring-0"
+                placeholder="Write a message or attach files..."
+                className="min-h-20 resize-none border-0 px-0 text-sm shadow-none focus-visible:ring-0"
               />
               <Separator className="my-3" />
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div className="flex flex-wrap items-center gap-2">
-                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium">
+                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-blue-200 px-3 py-2 text-sm font-medium text-slate-700 transition-all duration-200 hover:border-blue-300 hover:shadow-sm">
                     <Upload className="size-4" />
                     Attach files
                     <Input
@@ -375,27 +380,31 @@ const ProjectChatPanel = () => {
                   {files.map((file) => (
                     <span
                       key={`${file.name}-${file.lastModified}`}
-                      className="rounded-full bg-slate-100 px-3 py-1 text-xs"
+                      className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600"
                     >
                       {file.name}
                     </span>
                   ))}
                 </div>
 
-                <Button onClick={handleSend} disabled={isSending}>
+                <Button
+                  onClick={handleSend}
+                  disabled={isSending}
+                  className="h-9 rounded-xl bg-blue-600 px-4 text-white transition-all duration-200 hover:bg-blue-700"
+                >
                   {isSending ? (
                     <Loader2 className="size-4 animate-spin" />
                   ) : (
                     <Send className="size-4" />
                   )}
-                  Send
+                  Send message
                 </Button>
               </div>
             </div>
           </>
         ) : (
-          <ScrollArea className="h-[60vh] rounded-xl border bg-slate-50/60 p-4">
-            <div className="grid gap-4 pr-4 md:grid-cols-2 xl:grid-cols-3">
+          <ScrollArea className="min-h-0 flex-1 rounded-2xl border border-slate-200 bg-white p-3">
+            <div className="grid gap-3 pr-3 md:grid-cols-2 xl:grid-cols-3">
               {isPending || isFetching ? (
                 <div className="col-span-full flex items-center justify-center py-10 text-sm text-muted-foreground">
                   <Loader2 className="mr-2 size-4 animate-spin" />
@@ -409,12 +418,12 @@ const ProjectChatPanel = () => {
                 sharedFiles.map(({ attachment, chatMessage }) => (
                   <div
                     key={`${chatMessage._id}-${attachment.publicId}`}
-                    className="rounded-xl border bg-white p-4 shadow-sm"
+                    className="rounded-2xl border border-emerald-200 bg-white p-3.5 shadow-sm"
                   >
                     <div className="mb-3">
                       {renderAttachment(attachment, true)}
                     </div>
-                    <p className="truncate text-sm font-semibold">
+                    <p className="truncate text-sm font-semibold text-slate-900">
                       {attachment.originalName}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">

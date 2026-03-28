@@ -38,11 +38,12 @@ const TaskTable = () => {
 
   const [filters, setFilters] = useTaskTableFilter();
   const workspaceId = useWorkspaceId();
-  const { hasPermission } = useAuthContext();
+  const { hasPermission, user } = useAuthContext();
   const canManageTasks =
     hasPermission(Permissions.EDIT_TASK) ||
     hasPermission(Permissions.DELETE_TASK);
-  const columns = getColumns(projectId, canManageTasks);
+  const canUpdateTaskStatus = !!user?._id;
+  const columns = getColumns(projectId, canManageTasks, canUpdateTaskStatus);
 
   const { data, isLoading } = useQuery({
     queryKey: [

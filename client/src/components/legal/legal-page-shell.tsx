@@ -20,10 +20,11 @@ const LegalPageShell = (props: {
     <main className="min-h-svh bg-slate-50 px-6 py-10 md:px-10">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 font-medium text-slate-900">
-            <Logo url={BASE_ROUTE.HOME} />
-            <Link to={BASE_ROUTE.HOME}>Team Sync.</Link>
-          </div>
+          <Logo
+            url={BASE_ROUTE.HOME}
+            className="flex items-center"
+            imageClassName="h-11 w-auto object-contain"
+          />
           <Link
             to={AUTH_ROUTES.SIGN_IN}
             className="text-sm text-slate-600 transition-colors hover:text-slate-900"

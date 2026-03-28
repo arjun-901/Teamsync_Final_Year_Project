@@ -259,7 +259,14 @@ export const changeMemberRoleService = async (
   });
 
   if (!member) {
-    throw new Error("Member not found in the workspace");
+    throw new NotFoundException("Member not found in the workspace");
+  }
+
+  // The original workspace owner must remain immutable.
+  if (workspace.owner.equals(new mongoose.Types.ObjectId(memberId))) {
+    throw new BadRequestException(
+      "Role of the original workspace owner cannot be changed"
+    );
   }
 
   member.role = role;

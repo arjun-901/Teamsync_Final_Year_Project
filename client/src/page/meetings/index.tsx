@@ -65,7 +65,7 @@ const MeetingsPage: React.FC = () => {
       setOpen(false);
       toast({
         title: "Meeting created",
-        description: "Scheduled meeting successfully create ho gayi.",
+        description: "The meeting has been scheduled successfully.",
       });
     },
   });
@@ -86,7 +86,7 @@ const MeetingsPage: React.FC = () => {
       await queryClient.invalidateQueries({ queryKey: ["meetings", workspaceId] });
       toast({
         title: "Meeting ended",
-        description: "Live call successfully end ho gayi.",
+        description: "The live meeting has ended successfully.",
       });
     },
   });
@@ -97,7 +97,7 @@ const MeetingsPage: React.FC = () => {
       await queryClient.invalidateQueries({ queryKey: ["meetings", workspaceId] });
       toast({
         title: "Meeting deleted",
-        description: "Meeting record remove kar diya gaya hai.",
+        description: "The meeting record has been deleted.",
       });
     },
   });
@@ -220,7 +220,7 @@ const MeetingsPage: React.FC = () => {
                         await navigator.clipboard.writeText(meeting.joinUrl);
                         toast({
                           title: "Invite link copied",
-                          description: "Meeting link clipboard mein copy ho gaya hai.",
+                          description: "The meeting link has been copied to your clipboard.",
                         });
                       }}
                     >

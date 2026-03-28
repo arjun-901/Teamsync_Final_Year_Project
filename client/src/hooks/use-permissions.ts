@@ -20,7 +20,21 @@ const usePermissions = (
           return;
         }
 
-        setPermissions(member.role.permissions || []);
+        const rolePermissions = member.role.permissions || [];
+
+        // Backward-compatible fallback: ensure admin can change member roles
+        // even if older seeded role documents do not include this permission yet.
+        if (member.role.name === "ADMIN") {
+          setPermissions([
+            ...new Set([
+              ...rolePermissions,
+              Permissions.CHANGE_MEMBER_ROLE,
+            ]),
+          ]);
+          return;
+        }
+
+        setPermissions(rolePermissions);
       }
     }
   }, [user, workspace]);

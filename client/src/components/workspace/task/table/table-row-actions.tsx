@@ -31,9 +31,11 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
 
   const queryClient = useQueryClient();
   const workspaceId = useWorkspaceId();
-  const { hasPermission } = useAuthContext();
+  const { hasPermission, user } = useAuthContext();
   const canEditTask = hasPermission(Permissions.EDIT_TASK);
   const canDeleteTask = hasPermission(Permissions.DELETE_TASK);
+  const canUpdateOwnTaskStatus = row.original.assignedTo?._id === user?._id;
+  const canOpenTaskEditor = canEditTask || canUpdateOwnTaskStatus;
 
   const { mutate, isPending } = useMutation({
     mutationFn: deleteTaskMutationFn,
@@ -43,7 +45,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const taskId = task._id as string;
   const taskCode = task.taskCode;
 
-  if (!canEditTask && !canDeleteTask) {
+  if (!canOpenTaskEditor && !canDeleteTask) {
     return null;
   }
 
@@ -73,15 +75,16 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          {canEditTask ? (
+          {canOpenTaskEditor ? (
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={() => setOpenEditDialog(true)}
             >
-              <Pencil className="w-4 h-4 mr-2" /> Edit Task
+              <Pencil className="w-4 h-4 mr-2" />
+              {canEditTask ? "Edit Task" : "Update Status"}
             </DropdownMenuItem>
           ) : null}
-          {canEditTask && canDeleteTask ? <DropdownMenuSeparator /> : null}
+          {canOpenTaskEditor && canDeleteTask ? <DropdownMenuSeparator /> : null}
 
           {canDeleteTask ? (
             <DropdownMenuItem
@@ -95,7 +98,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {canEditTask ? (
+      {canOpenTaskEditor ? (
         <EditTaskDialog
           task={task}
           isOpen={openEditDialog}

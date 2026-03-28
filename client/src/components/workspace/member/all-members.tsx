@@ -25,7 +25,7 @@ import { changeWorkspaceMemberRoleMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import { Permissions } from "@/constant";
 const AllMembers = () => {
-  const { user, hasPermission } = useAuthContext();
+  const { user, workspace, hasPermission } = useAuthContext();
 
   const canChangeMemberRole = hasPermission(Permissions.CHANGE_MEMBER_ROLE);
 
@@ -80,8 +80,18 @@ const AllMembers = () => {
         const name = member.userId?.name;
         const initials = getAvatarFallbackText(name);
         const avatarColor = getAvatarColor(name);
+        const isOriginalOwner = member.userId._id === workspace?.owner;
+        const disableRoleChange =
+          isLoading ||
+          !canChangeMemberRole ||
+          member.userId._id === user?._id ||
+          isOriginalOwner;
+
         return (
-          <div className="flex items-center justify-between space-x-4">
+          <div
+            key={member._id}
+            className="flex items-center justify-between space-x-4"
+          >
             <div className="flex items-center space-x-4">
               <Avatar className="h-8 w-8">
                 <AvatarImage
@@ -106,19 +116,15 @@ const AllMembers = () => {
                     variant="outline"
                     size="sm"
                     className="ml-auto min-w-24 capitalize disabled:opacity-95 disabled:pointer-events-none"
-                    disabled={
-                      isLoading ||
-                      !canChangeMemberRole ||
-                      member.userId._id === user?._id
-                    }
+                    disabled={disableRoleChange}
                   >
                     {member.role.name?.toLowerCase()}{" "}
-                    {canChangeMemberRole && member.userId._id !== user?._id && (
+                    {canChangeMemberRole && !disableRoleChange && (
                       <ChevronDown className="text-muted-foreground" />
                     )}
                   </Button>
                 </PopoverTrigger>
-                {canChangeMemberRole && (
+                {canChangeMemberRole && !isOriginalOwner && (
                   <PopoverContent className="p-0" align="end">
                     <Command>
                       <CommandInput
@@ -133,33 +139,31 @@ const AllMembers = () => {
                           <>
                             <CommandEmpty>No roles found.</CommandEmpty>
                             <CommandGroup>
-                              {roles?.map(
-                                (role) =>
-                                  role.name !== "OWNER" && (
-                                    <CommandItem
-                                      key={role._id}
-                                      disabled={isLoading}
-                                      className="disabled:pointer-events-none gap-1 mb-1  flex flex-col items-start px-4 py-2 cursor-pointer"
-                                      onSelect={() => {
-                                        handleSelect(
-                                          role._id,
-                                          member.userId._id
-                                        );
-                                      }}
-                                    >
-                                      <p className="capitalize">
-                                        {role.name?.toLowerCase()}
-                                      </p>
-                                      <p className="text-sm text-muted-foreground">
-                                        {role.name === "ADMIN" &&
-                                          `Can view, create, edit tasks, project and manage settings .`}
-
-                                        {role.name === "MEMBER" &&
-                                          `Can view only tasks assigned to them.`}
-                                      </p>
-                                    </CommandItem>
-                                  )
-                              )}
+                              {roles?.map((role) => (
+                                <CommandItem
+                                  key={role._id}
+                                  disabled={isLoading}
+                                  className="disabled:pointer-events-none gap-1 mb-1  flex flex-col items-start px-4 py-2 cursor-pointer"
+                                  onSelect={() => {
+                                    handleSelect(
+                                      role._id,
+                                      member.userId._id
+                                    );
+                                  }}
+                                >
+                                  <p className="capitalize">
+                                    {role.name?.toLowerCase()}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    {role.name === "OWNER" &&
+                                      `Full workspace access, including member and role management.`}
+                                    {role.name === "ADMIN" &&
+                                      `Can manage members, projects, tasks, and workspace settings.`}
+                                    {role.name === "MEMBER" &&
+                                      `Can view only tasks assigned to them.`}
+                                  </p>
+                                </CommandItem>
+                              ))}
                             </CommandGroup>
                           </>
                         )}

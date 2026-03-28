@@ -20,11 +20,13 @@ import {
 } from "../types/api.type";
 import {
   AllWorkspaceResponseType,
+  ChangeCurrentUserPasswordPayloadType,
   CreateWorkspaceType,
   CurrentUserResponseType,
   LoginResponseType,
   loginType,
   registerType,
+  UpdateCurrentUserProfilePayloadType,
   WorkspaceByIdResponseType,
   EditWorkspaceType,
 } from "@/types/api.type";
@@ -46,6 +48,24 @@ export const getCurrentUserQueryFn =
     const response = await API.get(`/user/current`);
     return response.data;
   };
+
+export const updateCurrentUserProfileMutationFn = async ({
+  data,
+}: UpdateCurrentUserProfilePayloadType): Promise<CurrentUserResponseType> => {
+  const response = await API.put(`/user/profile`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const changeCurrentUserPasswordMutationFn = async (
+  data: ChangeCurrentUserPasswordPayloadType
+): Promise<{ message: string }> => {
+  const response = await API.put(`/user/password`, data);
+  return response.data;
+};
 
 //********* WORKSPACE ****************
 //************* */

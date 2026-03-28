@@ -54,3 +54,37 @@ export const uploadFileToCloudinary = async ({
     fileType: getFileType(mimeType),
   };
 };
+
+export const uploadProfileImageToCloudinary = async ({
+  buffer,
+  originalName,
+  mimeType,
+  size,
+  userId,
+}: {
+  buffer: Buffer;
+  originalName: string;
+  mimeType: string;
+  size: number;
+  userId: string;
+}) => {
+  const encoded = `data:${mimeType};base64,${buffer.toString("base64")}`;
+
+  const result = await cloudinary.uploader.upload(encoded, {
+    folder: `teamsync/profile/${userId}`,
+    resource_type: "image",
+    use_filename: true,
+    unique_filename: true,
+    filename_override: originalName,
+  });
+
+  return {
+    url: result.secure_url,
+    publicId: result.public_id,
+    originalName,
+    mimeType,
+    size,
+    resourceType: result.resource_type,
+    fileType: "image",
+  };
+};

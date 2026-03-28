@@ -80,12 +80,11 @@ export default function EditWorkspaceForm() {
   };
 
   return (
-    <div className="w-full h-auto max-w-full">
+    <div className="w-full h-auto max-w-full rounded-2xl border-2 border-blue-200 bg-white p-4">
       <div className="h-full">
-        <div className="mb-5 border-b">
+        <div className="mb-4 border-b border-slate-200 pb-2">
           <h1
-            className="text-[17px] tracking-[-0.16px] dark:text-[#fcfdffef] font-semibold mb-1.5
-           text-center sm:text-left"
+            className="text-[17px] tracking-[-0.16px] font-semibold mb-1 text-center sm:text-left"
           >
             Edit Workspace
           </h1>
@@ -99,12 +98,12 @@ export default function EditWorkspaceForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Workspace name
+                      Workspace Name
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Taco's Co."
-                        className="!h-[48px] disabled:opacity-90 disabled:pointer-events-none"
+                        className="h-10 rounded-xl border-slate-200 disabled:opacity-90 disabled:pointer-events-none"
                         disabled={!canEditWorkspace}
                         {...field}
                       />
@@ -121,7 +120,7 @@ export default function EditWorkspaceForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="dark:text-[#f1f7feb5] text-sm">
-                      Workspace description
+                      Workspace Description
                       <span className="text-xs font-extralight ml-2">
                         Optional
                       </span>
@@ -130,7 +129,7 @@ export default function EditWorkspaceForm() {
                       <Textarea
                         rows={6}
                         disabled={!canEditWorkspace}
-                        className="disabled:opacity-90 disabled:pointer-events-none"
+                        className="rounded-xl border-slate-200 disabled:opacity-90 disabled:pointer-events-none"
                         placeholder="Our team organizes marketing projects and tasks here."
                         {...field}
                       />
@@ -142,7 +141,7 @@ export default function EditWorkspaceForm() {
             </div>
             {canEditWorkspace && (
               <Button
-                className="flex place-self-end  h-[40px] text-white font-semibold"
+                className="flex place-self-end h-10 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700"
                 disabled={isPending}
                 type="submit"
               >

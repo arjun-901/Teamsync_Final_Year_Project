@@ -29,7 +29,7 @@ const RecentTasks = () => {
   const tasks: TaskType[] = data?.tasks || [];
 
   return (
-    <div className="flex flex-col space-y-6">
+    <div className="flex flex-col space-y-3">
       {isLoading ? (
         <Loader
           className="w-8 h-8 
@@ -43,7 +43,7 @@ const RecentTasks = () => {
         <div
           className="font-semibold
          text-sm text-muted-foreground
-          text-center py-5"
+          text-center py-4"
         >
           No Task created yet
         </div>
@@ -57,44 +57,40 @@ const RecentTasks = () => {
           return (
             <li
               key={task._id}
-              className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-between gap-2 px-2 py-3 hover:bg-gray-50 transition-colors"
             >
-              {/* Task Info */}
               <div className="flex flex-col space-y-1 flex-grow">
-                <span className="text-sm capitalize text-gray-600 font-medium">
+                <span className="text-xs capitalize text-gray-600 font-medium">
                   {task.taskCode}
                 </span>
-                <p className="text-md font-semibold text-gray-800 truncate">
+                <p className="text-sm font-semibold text-gray-800 truncate">
                   {task.title}
                 </p>
-                <span className="text-sm text-gray-500">
+                <span className="text-xs text-gray-500">
                   Due: {task.dueDate ? format(task.dueDate, "PPP") : null}
                 </span>
               </div>
 
-              {/* Task Status */}
-              <div className="text-sm font-medium ">
+              <div className="text-xs font-medium">
                 <Badge
                   variant={TaskStatusEnum[task.status]}
-                  className="flex w-auto p-1 px-2 gap-1 font-medium shadow-sm uppercase border-0"
+                  className="flex w-auto gap-1 border-0 px-1.5 py-1 text-[10px] font-medium uppercase shadow-sm"
                 >
                   <span>{transformStatusEnum(task.status)}</span>
                 </Badge>
               </div>
 
-              {/* Task Priority */}
-              <div className="text-sm ml-2">
+              <div className="ml-1 text-xs">
                 <Badge
                   variant={TaskPriorityEnum[task.priority]}
-                  className="flex w-auto p-1 px-2 gap-1 font-medium shadow-sm uppercase border-0"
+                  className="flex w-auto gap-1 border-0 px-1.5 py-1 text-[10px] font-medium uppercase shadow-sm"
                 >
                   <span>{transformStatusEnum(task.priority)}</span>
                 </Badge>
               </div>
 
-              {/* Assignee */}
-              <div className="flex items-center space-x-2 ml-2">
-                <Avatar className="h-8 w-8">
+              <div className="ml-1 flex items-center space-x-2">
+                <Avatar className="h-7 w-7">
                   <AvatarImage
                     src={task.assignedTo?.profilePicture || ""}
                     alt={task.assignedTo?.name}

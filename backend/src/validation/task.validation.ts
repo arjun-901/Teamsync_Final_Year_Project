@@ -38,11 +38,15 @@ export const createTaskSchema = z.object({
   dueDate: dueDateSchema,
 });
 
-export const updateTaskSchema = z.object({
-  title: titleSchema,
-  description: descriptionSchema,
-  priority: prioritySchema,
-  status: statusSchema,
-  assignedTo: assignedToSchema,
-  dueDate: dueDateSchema,
-});
+export const updateTaskSchema = z
+  .object({
+    title: titleSchema.optional(),
+    description: descriptionSchema,
+    priority: prioritySchema.optional(),
+    status: statusSchema.optional(),
+    assignedTo: assignedToSchema,
+    dueDate: dueDateSchema,
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field is required to update the task.",
+  });
