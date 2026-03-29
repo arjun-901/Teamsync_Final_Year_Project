@@ -167,6 +167,14 @@ export const getWorkspaceAnalyticsService = async (
     ...(projectFilter ? { project: { $in: projectFilter } } : {}),
   };
 
+  const taskScopeQuery =
+    role === Roles.MEMBER
+      ? {
+          ...baseQuery,
+          assignedTo: userId,
+        }
+      : baseQuery;
+
   const [
     totalTasks,
     overdueTasks,
@@ -178,38 +186,38 @@ export const getWorkspaceAnalyticsService = async (
     highPriorityTasks,
     totalProjects,
   ] = await Promise.all([
-    TaskModel.countDocuments(baseQuery),
+    TaskModel.countDocuments(taskScopeQuery),
     TaskModel.countDocuments({
-      ...baseQuery,
+      ...taskScopeQuery,
       dueDate: { $lt: currentDate },
       status: { $ne: TaskStatusEnum.DONE },
     }),
     TaskModel.countDocuments({
-      ...baseQuery,
+      ...taskScopeQuery,
       status: TaskStatusEnum.DONE,
     }),
     TaskModel.countDocuments({
-      ...baseQuery,
+      ...taskScopeQuery,
       status: TaskStatusEnum.IN_PROGRESS,
     }),
     TaskModel.countDocuments({
-      ...baseQuery,
+      ...taskScopeQuery,
       status: {
         $in: [TaskStatusEnum.TODO, TaskStatusEnum.BACKLOG, TaskStatusEnum.IN_REVIEW],
       },
     }),
     TaskModel.countDocuments({
-      ...baseQuery,
+      ...taskScopeQuery,
       assignedTo: userId,
       status: { $ne: TaskStatusEnum.DONE },
     }),
     TaskModel.countDocuments({
-      ...baseQuery,
+      ...taskScopeQuery,
       dueDate: { $gte: currentDate, $lte: upcomingDate },
       status: { $ne: TaskStatusEnum.DONE },
     }),
     TaskModel.countDocuments({
-      ...baseQuery,
+      ...taskScopeQuery,
       priority: "HIGH",
       status: { $ne: TaskStatusEnum.DONE },
     }),

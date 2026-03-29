@@ -29,19 +29,15 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "../../ui/textarea";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  getAvatarColor,
-  getAvatarFallbackText,
-  transformOptions,
-} from "@/lib/helper";
+import { transformOptions } from "@/lib/helper";
 import useWorkspaceId from "@/hooks/use-workspace-id";
 import { TaskPriorityEnum, TaskStatusEnum } from "@/constant";
 import useGetProjectsInWorkspaceQuery from "@/hooks/api/use-get-projects";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createTaskMutationFn } from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import useGetProjectMembers from "@/hooks/api/use-get-project-members";
+import TaskAssigneeMultiSelect from "./task-assignee-multi-select";
 
 export default function CreateTaskForm(props: {
   projectId?: string;
@@ -96,8 +92,8 @@ export default function CreateTaskForm(props: {
         required_error: "Priority is required",
       }
     ),
-    assignedTo: z.string().trim().min(1, {
-      message: "AssignedTo is required",
+    assignedTo: z.array(z.string()).min(1, {
+      message: "Select at least one assignee",
     }),
     dueDate: z.date({
       required_error: "A date of birth is required.",
@@ -110,6 +106,7 @@ export default function CreateTaskForm(props: {
       title: "",
       description: "",
       projectId: projectId ? projectId : "",
+      assignedTo: [],
     },
   });
 
@@ -127,24 +124,11 @@ export default function CreateTaskForm(props: {
     projectMembersData?.members?.filter((member) => member.isProjectMember) ||
     [];
 
-  const membersOptions = members.map((member) => {
-    const name = member.userId?.name || "Unknown";
-    const initials = getAvatarFallbackText(name);
-    const avatarColor = getAvatarColor(name);
-
-    return {
-      label: (
-        <div className="flex items-center space-x-2">
-          <Avatar className="h-7 w-7">
-            <AvatarImage src={member.userId?.profilePicture || ""} alt={name} />
-            <AvatarFallback className={avatarColor}>{initials}</AvatarFallback>
-          </Avatar>
-          <span>{name}</span>
-        </div>
-      ),
-      value: member.userId._id,
-    };
-  });
+  const membersOptions = members.map((member) => ({
+    value: member.userId._id,
+    name: member.userId?.name || "Unknown",
+    profilePicture: member.userId?.profilePicture || null,
+  }));
 
   const statusOptions = transformOptions(taskStatusList);
   const priorityOptions = transformOptions(taskPriorityList);
@@ -152,12 +136,17 @@ export default function CreateTaskForm(props: {
   useEffect(() => {
     const assignedTo = form.getValues("assignedTo");
 
-    if (!assignedTo) return;
+    if (assignedTo.length === 0) return;
 
-    const memberExists = members.some((member) => member.userId._id === assignedTo);
+    const validAssignees = assignedTo.filter((memberId) =>
+      members.some((member) => member.userId._id === memberId)
+    );
 
-    if (!memberExists) {
-      form.setValue("assignedTo", "");
+    if (validAssignees.length !== assignedTo.length) {
+      form.setValue("assignedTo", validAssignees, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
     }
   }, [form, members, selectedProjectId]);
 
@@ -317,38 +306,16 @@ export default function CreateTaskForm(props: {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Assigned To</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a assignee" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <div
-                          className="w-full max-h-[200px]
-                           overflow-y-auto scrollbar
-                          "
-                        >
-                          {selectedProjectId && membersOptions?.length === 0 ? (
-                            <div className="px-2 py-3 text-sm text-muted-foreground">
-                              No members have been added to this project yet.
-                            </div>
-                          ) : null}
-                          {membersOptions?.map((option) => (
-                            <SelectItem
-                              className="cursor-pointer"
-                              key={option.value}
-                              value={option.value}
-                            >
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </div>
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <TaskAssigneeMultiSelect
+                        options={membersOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select one or more assignees"
+                        disabled={!selectedProjectId}
+                        emptyMessage="No members have been added to this project yet."
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

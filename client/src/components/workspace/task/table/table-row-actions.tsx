@@ -20,6 +20,7 @@ import { toast } from "@/hooks/use-toast";
 import EditTaskDialog from "../edit-task-dialog"; // Import the Edit Dialog
 import { useAuthContext } from "@/context/auth-provider";
 import { Permissions } from "@/constant";
+import { normalizeTaskAssignees } from "@/lib/helper";
 
 interface DataTableRowActionsProps {
   row: Row<TaskType>;
@@ -34,7 +35,9 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { hasPermission, user } = useAuthContext();
   const canEditTask = hasPermission(Permissions.EDIT_TASK);
   const canDeleteTask = hasPermission(Permissions.DELETE_TASK);
-  const canUpdateOwnTaskStatus = row.original.assignedTo?._id === user?._id;
+  const canUpdateOwnTaskStatus = normalizeTaskAssignees(
+    row.original.assignedTo
+  ).some((assignee) => assignee._id === user?._id);
   const canOpenTaskEditor = canEditTask || canUpdateOwnTaskStatus;
 
   const { mutate, isPending } = useMutation({

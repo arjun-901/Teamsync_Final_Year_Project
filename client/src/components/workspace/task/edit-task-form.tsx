@@ -37,13 +37,18 @@ import { TaskType } from "@/types/api.type";
 import useGetProjectMembers from "@/hooks/api/use-get-project-members";
 import { useAuthContext } from "@/context/auth-provider";
 import { Permissions } from "@/constant";
+import TaskAssigneeMultiSelect from "./task-assignee-multi-select";
+import { normalizeTaskAssignees } from "@/lib/helper";
 
 export default function EditTaskForm({ task, onClose }: { task: TaskType; onClose: () => void }) {
   const queryClient = useQueryClient();
   const workspaceId = useWorkspaceId();
   const { hasPermission, user } = useAuthContext();
   const canFullyEditTask = hasPermission(Permissions.EDIT_TASK);
-  const canUpdateOwnTaskStatus = task.assignedTo?._id === user?._id;
+  const taskAssignees = normalizeTaskAssignees(task.assignedTo);
+  const canUpdateOwnTaskStatus = taskAssignees.some(
+    (assignee) => assignee._id === user?._id
+  );
   const isStatusOnlyMode = !canFullyEditTask && canUpdateOwnTaskStatus;
 
   const { mutate, isPending } = useMutation({
@@ -60,8 +65,9 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
 
   // Members Dropdown Options
   const membersOptions = members.map((member) => ({
-    label: member.userId?.name || "Unknown",
     value: member.userId?._id || "",
+    name: member.userId?.name || "Unknown",
+    profilePicture: member.userId?.profilePicture || null,
   }));
 
   // Status & Priority Options
@@ -80,7 +86,9 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
     description: z.string().trim(),
     status: z.enum(Object.values(TaskStatusEnum) as [keyof typeof TaskStatusEnum]),
     priority: z.enum(Object.values(TaskPriorityEnum) as [keyof typeof TaskPriorityEnum]),
-    assignedTo: z.string().trim().min(1, { message: "AssignedTo is required" }),
+    assignedTo: z.array(z.string()).min(1, {
+      message: "Select at least one assignee",
+    }),
     dueDate: z.date({ required_error: "A due date is required." }),
   });
 
@@ -91,7 +99,7 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
       description: task?.description ?? "",
       status: task?.status ?? "TODO",
       priority: task?.priority ?? "MEDIUM",
-      assignedTo: task.assignedTo?._id ?? "",
+      assignedTo: taskAssignees.map((assignee) => assignee._id),
       dueDate: task?.dueDate ? new Date(task.dueDate) : new Date(),
     },
   });
@@ -99,12 +107,17 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
   useEffect(() => {
     const assignedTo = form.getValues("assignedTo");
 
-    if (!assignedTo) return;
+    if (assignedTo.length === 0) return;
 
-    const memberExists = members.some((member) => member.userId._id === assignedTo);
+    const validAssignees = assignedTo.filter((memberId) =>
+      members.some((member) => member.userId._id === memberId)
+    );
 
-    if (!memberExists) {
-      form.setValue("assignedTo", "");
+    if (validAssignees.length !== assignedTo.length) {
+      form.setValue("assignedTo", validAssignees, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
     }
   }, [form, members]);
 
@@ -180,21 +193,14 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
                 <FormField control={form.control} name="assignedTo" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Assigned To</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value} defaultValue={field.value}>
-                      <FormControl><SelectTrigger><SelectValue placeholder="Select an assignee" /></SelectTrigger></FormControl>
-                      <SelectContent>
-                      <div className="w-full max-h-[200px] overflow-y-auto scrollbar">
-                        {membersOptions.length === 0 ? (
-                          <div className="px-2 py-3 text-sm text-muted-foreground">
-                            No members have been added to this project yet.
-                          </div>
-                        ) : null}
-                        {membersOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                        ))}
-                        </div>
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <TaskAssigneeMultiSelect
+                        options={membersOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select one or more assignees"
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />

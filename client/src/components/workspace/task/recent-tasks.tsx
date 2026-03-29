@@ -6,6 +6,7 @@ import { getAllTasksQueryFn } from "@/lib/api";
 import {
   getAvatarColor,
   getAvatarFallbackText,
+  normalizeTaskAssignees,
   transformStatusEnum,
 } from "@/lib/helper";
 import { TaskType } from "@/types/api.type";
@@ -51,9 +52,8 @@ const RecentTasks = () => {
 
       <ul role="list" className="divide-y divide-gray-200">
         {tasks.map((task) => {
-          const name = task?.assignedTo?.name || "";
-          const initials = getAvatarFallbackText(name);
-          const avatarColor = getAvatarColor(name);
+          const assignees = normalizeTaskAssignees(task.assignedTo);
+
           return (
             <li
               key={task._id}
@@ -90,15 +90,27 @@ const RecentTasks = () => {
               </div>
 
               <div className="ml-1 flex items-center space-x-2">
-                <Avatar className="h-7 w-7">
-                  <AvatarImage
-                    src={task.assignedTo?.profilePicture || ""}
-                    alt={task.assignedTo?.name}
-                  />
-                  <AvatarFallback className={avatarColor}>
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="flex -space-x-2">
+                  {assignees.slice(0, 3).map((assignee) => {
+                    const initials = getAvatarFallbackText(assignee.name);
+                    const avatarColor = getAvatarColor(assignee.name);
+
+                    return (
+                      <Avatar
+                        key={assignee._id}
+                        className="h-7 w-7 border border-white"
+                      >
+                        <AvatarImage
+                          src={assignee.profilePicture || ""}
+                          alt={assignee.name}
+                        />
+                        <AvatarFallback className={avatarColor}>
+                          {initials}
+                        </AvatarFallback>
+                      </Avatar>
+                    );
+                  })}
+                </div>
               </div>
             </li>
           );

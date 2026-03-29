@@ -15,6 +15,7 @@ import {
   formatStatusToEnum,
   getAvatarColor,
   getAvatarFallbackText,
+  normalizeTaskAssignees,
 } from "@/lib/helper";
 import { priorities, statuses } from "./data";
 import { TaskType } from "@/types/api.type";
@@ -100,26 +101,46 @@ export const getColumns = (
         <DataTableColumnHeader column={column} title="Assigned To" />
       ),
       cell: ({ row }) => {
-        const assignee = row.original.assignedTo || null;
-        const name = assignee?.name || "";
+        const assignees = normalizeTaskAssignees(row.original.assignedTo);
 
-        const initials = getAvatarFallbackText(name);
-        const avatarColor = getAvatarColor(name);
+        if (assignees.length === 0) {
+          return null;
+        }
 
         return (
-          name && (
-            <div className="flex items-center gap-1">
-              <Avatar className="h-6 w-6">
-                <AvatarImage src={assignee?.profilePicture || ""} alt={name} />
-                <AvatarFallback className={avatarColor}>
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <span className="block text-ellipsis w-[100px] truncate">
-                {assignee?.name}
-              </span>
+          <div className="flex items-center gap-2">
+            <div className="flex -space-x-2">
+              {assignees.slice(0, 3).map((assignee) => {
+                const initials = getAvatarFallbackText(assignee.name);
+                const avatarColor = getAvatarColor(assignee.name);
+
+                return (
+                  <Avatar
+                    key={assignee._id}
+                    className="h-6 w-6 border border-background"
+                  >
+                    <AvatarImage
+                      src={assignee.profilePicture || ""}
+                      alt={assignee.name}
+                    />
+                    <AvatarFallback className={avatarColor}>
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                );
+              })}
             </div>
-          )
+            <div className="min-w-0">
+              <span className="block w-[140px] truncate">
+                {assignees.map((assignee) => assignee.name).join(", ")}
+              </span>
+              {assignees.length > 1 ? (
+                <span className="text-xs text-muted-foreground">
+                  {assignees.length} assignees
+                </span>
+              ) : null}
+            </div>
+          </div>
         );
       },
     },

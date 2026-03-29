@@ -155,14 +155,6 @@ export const createMeeting = async (data: any, user: any) => {
       throw new UnauthorizedException("Only OWNER or ADMIN can create meetings");
     }
 
-    if (!user?.currentWorkspace) {
-      throw new UnauthorizedException("User workspace not found");
-    }
-
-    if (user.currentWorkspace.toString() !== workspaceId.toString()) {
-      throw new UnauthorizedException("Cannot create meeting for another workspace");
-    }
-
     let participantIds: mongoose.Types.ObjectId[] = [];
 
     if (data.projectId) {

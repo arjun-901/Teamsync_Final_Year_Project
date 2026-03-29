@@ -1,3 +1,5 @@
+import { TaskAssigneeType, TaskType } from "@/types/api.type";
+
 //THE UPDATED ONE BECAUSE OF THE FILTERS ->  Take Note ->
 export const transformOptions = (
   options: string[],
@@ -49,4 +51,11 @@ export const getAvatarFallbackText = (name: string) => {
     .join("")
     .slice(0, 2); // Ensure only two initials
   return initials || "NA";
+};
+
+export const normalizeTaskAssignees = (
+  assignedTo: TaskType["assignedTo"]
+): TaskAssigneeType[] => {
+  if (!assignedTo) return [];
+  return Array.isArray(assignedTo) ? assignedTo : [assignedTo];
 };
