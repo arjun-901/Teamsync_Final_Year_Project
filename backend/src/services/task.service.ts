@@ -7,6 +7,43 @@ import { BadRequestException, NotFoundException } from "../utils/appError";
 import { isUserProjectMemberService } from "./project-member.service";
 import { Roles } from "../enums/role.enum";
 
+const normalizeAssignedUserIds = (assignedTo?: string[]) => {
+  if (!assignedTo || assignedTo.length === 0) return [];
+  return Array.from(new Set(assignedTo.filter(Boolean)));
+};
+
+const includesAssignedUser = (
+  assignedTo: Array<mongoose.Types.ObjectId | string> | undefined,
+  userId: string
+) => {
+  if (!assignedTo || assignedTo.length === 0) return false;
+  return assignedTo.some((assignee) => assignee.toString() === userId.toString());
+};
+
+const assertAssignedUsersAreProjectMembers = async ({
+  workspaceId,
+  projectId,
+  assignedTo,
+}: {
+  workspaceId: string;
+  projectId: string;
+  assignedTo: string[];
+}) => {
+  const results = await Promise.all(
+    assignedTo.map((assigneeId) =>
+      isUserProjectMemberService(workspaceId, projectId, assigneeId)
+    )
+  );
+
+  const hasInvalidAssignee = results.some((isMember) => !isMember);
+
+  if (hasInvalidAssignee) {
+    throw new BadRequestException(
+      "One or more assigned users are not members of this project."
+    );
+  }
+};
+
 export const createTaskService = async (
   workspaceId: string,
   projectId: string,
@@ -17,11 +54,12 @@ export const createTaskService = async (
     description?: string;
     priority: string;
     status: string;
-    assignedTo?: string | null;
+    assignedTo?: string[];
     dueDate?: string;
   }
 ) => {
-  const { title, description, priority, status, assignedTo, dueDate } = body;
+  const { title, description, priority, status, dueDate } = body;
+  const assignedTo = normalizeAssignedUserIds(body.assignedTo);
 
   const project = await ProjectModel.findById(projectId);
 
@@ -41,18 +79,12 @@ export const createTaskService = async (
       throw new NotFoundException("Project not found");
     }
   }
-  if (assignedTo) {
-    const isAssignedUserMember = await isUserProjectMemberService(
+  if (assignedTo.length > 0) {
+    await assertAssignedUsersAreProjectMembers({
       workspaceId,
       projectId,
-      assignedTo
-    );
-
-    if (!isAssignedUserMember) {
-      throw new BadRequestException(
-        "Assigned user is not a member of this project."
-      );
-    }
+      assignedTo,
+    });
   }
   const task = new TaskModel({
     title,
@@ -82,7 +114,7 @@ export const updateTaskService = async (
     description?: string;
     priority?: string;
     status?: string;
-    assignedTo?: string | null;
+    assignedTo?: string[];
     dueDate?: string;
   }
 ) => {
@@ -115,7 +147,7 @@ export const updateTaskService = async (
   }
 
   if (role === Roles.MEMBER) {
-    if (task.assignedTo?.toString() !== userId.toString()) {
+    if (!includesAssignedUser(task.assignedTo as mongoose.Types.ObjectId[], userId)) {
       throw new NotFoundException("Task not found.");
     }
 
@@ -135,25 +167,24 @@ export const updateTaskService = async (
     }
   }
 
-  if (body.assignedTo) {
-    const isAssignedUserMember = await isUserProjectMemberService(
+  const updatePayload = {
+    ...body,
+    ...(body.assignedTo
+      ? { assignedTo: normalizeAssignedUserIds(body.assignedTo) }
+      : {}),
+  };
+
+  if (updatePayload.assignedTo && updatePayload.assignedTo.length > 0) {
+    await assertAssignedUsersAreProjectMembers({
       workspaceId,
       projectId,
-      body.assignedTo
-    );
-
-    if (!isAssignedUserMember) {
-      throw new BadRequestException(
-        "Assigned user is not a member of this project."
-      );
-    }
+      assignedTo: updatePayload.assignedTo,
+    });
   }
 
   const updatedTask = await TaskModel.findByIdAndUpdate(
     taskId,
-    {
-      ...body,
-    },
+    updatePayload,
     { new: true }
   );
 
@@ -303,7 +334,7 @@ export const getTaskByIdService = async (
 
   if (
     role === Roles.MEMBER &&
-    task.assignedTo?.toString() !== userId.toString()
+    !includesAssignedUser(task.assignedTo as mongoose.Types.ObjectId[], userId)
   ) {
     throw new NotFoundException("Task not found.");
   }
